@@ -171,7 +171,7 @@ public class KinematicCharacterController : MonoBehaviour {
                 float mag = leftOver.magnitude;
                 
                 Vector3 proj = Vector3.ProjectOnPlane(moveAmount, wallNormal).normalized;
-                moveAmount = moveToWall + new Vector3(proj.x * mag * scale, moveAmount.y, proj.z * mag * scale);
+                moveAmount = new Vector3(moveToWall.x + (proj.x * mag * scale), moveAmount.y, moveToWall.z + (proj.z * mag * scale));
             }
 
             // -- ceiling
@@ -228,6 +228,8 @@ public class KinematicCharacterController : MonoBehaviour {
     private void WallCollisions(Vector3 moveAmount, Bounds bounds) {
         hittingWall = false;
         float dist = moveAmount.magnitude + skinWidth;
+        // if on slope, cast along movement direction, otherwise just cast forward
+        Vector3 direction = onSlope ? moveAmount.normalized : new Vector3(moveAmount.x, 0, moveAmount.z).normalized;
 
         RaycastHit hit;
         Color color = Color.blue;
@@ -236,7 +238,7 @@ public class KinematicCharacterController : MonoBehaviour {
                 bounds.center + new Vector3(0, col.height/2 - col.radius, 0),
                 bounds.center - new Vector3(0, col.height/2 - col.radius, 0),
                 bounds.extents.x,
-                moveAmount.normalized,
+                direction,
                 out hit,
                 dist,
                 collisionMask
@@ -255,7 +257,7 @@ public class KinematicCharacterController : MonoBehaviour {
         
         Debug.DrawRay(
             bounds.center + new Vector3(moveAmount.x, 0, moveAmount.z).normalized * bounds.extents.x,
-            moveAmount.normalized * dist,
+            direction * dist,
             color,
             Time.deltaTime
         );
