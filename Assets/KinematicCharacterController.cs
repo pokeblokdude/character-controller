@@ -37,17 +37,15 @@ public class KinematicCharacterController : MonoBehaviour {
 
     [Tooltip("\"Buffer\" distance inside the collider from which to start all collision checks. Should be very small (but not too small).")]
     public float skinWidth = 0.015f;
+
+    [Tooltip("The maximum number of recursive collision \"bounces\" before the controller will stop.")]
+    public int maxCollisionDepth = 5;
     
     [Tooltip("The maximum angle at which the controller will treat the surface like a slope. Must be less than minWallAngle.")]
-    [Range(1, 89)] public float maxSlopeAngle = 60;
-
-    [Tooltip("The minimum angle at which the controller will treat a surface like a wall. Must be greater than maxSlopeAngle.")]
-    public float minWallAngle = 89;
+    [Range(1, 89)] public float maxSlopeAngle = 55;
     
-    [Tooltip("The minimum angle at which the controller will treat a surface like a ceiling.")]
-    [Range(91, 179)] public float minCeilingAngle = 179;
-    
-    public float maxStepHeight = 0.2f;
+    // [Tooltip("The maximum height for a wall to be considered a step that the controller will snap up onto.")]
+    // public float maxStepHeight = 0.2f;
     
     
     [Header("Jump")]
@@ -74,6 +72,7 @@ public class KinematicCharacterController : MonoBehaviour {
     public bool hittingWall { get; private set; }
 
     public float gravity { get; private set; }
+    private Vector3 gravityVector;
     private bool jumping;
     private float jumpForce;
     private float accel;
@@ -81,6 +80,7 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private Rigidbody rb;
     private CapsuleCollider col;
+    private Bounds bounds;
 
     void Awake() {
         rb = GetComponent<Rigidbody>();
@@ -89,6 +89,7 @@ public class KinematicCharacterController : MonoBehaviour {
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
         col = GetComponent<CapsuleCollider>();
+        col.center = new Vector3(0, col.height/2, 0);
 
         float halfDist = jumpDistance/2;
         gravity = (-2 * jumpHeight * maxSpeed * maxSpeed) / (halfDist * halfDist);
@@ -102,80 +103,59 @@ public class KinematicCharacterController : MonoBehaviour {
         Vector3 moveAmount;
 
         // --- movement input
+        // instant
         if(!useAcceleration) {
             groundSpeed = dir * maxSpeed;
         }
+        // acceleration
         else {
-            // --- WIP ---
-            // if(move && new Vector3(moveAmount.x, 0, moveAmount.z).magnitude < maxSpeed) {
-            //     moveAmount += new Vector3(dir.x * accel, 0, dir.y * accel) * Time.deltaTime;
-            // }
-            // else {
-            //     moveAmount -= moveAmount * deccel * Time.deltaTime;
-            // }
+            if(move && groundSpeed.magnitude < maxSpeed) {
+                groundSpeed += dir * accel * Time.deltaTime;
+            }
+            else if(move && groundSpeed.magnitude > maxSpeed) {
+                groundSpeed = groundSpeed.normalized * maxSpeed;
+            }
+            else {
+                groundSpeed -= groundSpeed.normalized * deccel * Time.deltaTime;
+                if(groundSpeed.magnitude < 0.1f) {
+                    groundSpeed = Vector2.zero;
+                }
+            }
         }
-        moveAmount = new Vector3(groundSpeed.x, velocity.y, groundSpeed.y);
-        
-        // --- gravity
-        if(isGrounded) {
-            moveAmount.y = gravity * Time.deltaTime;
+        moveAmount = new Vector3(groundSpeed.x, 0, groundSpeed.y) * Time.deltaTime;
+
+        isGrounded = GroundCheck(moveAmount * Time.deltaTime);
+
+        if(isGrounded && onSlope) {
+            float mag = moveAmount.magnitude;
+            moveAmount = Vector3.ProjectOnPlane(moveAmount, slopeNormal).normalized;
+            moveAmount *= mag;
         }
-        if(Mathf.Abs(moveAmount.y) < maxFallSpeed) {
-            moveAmount.y += gravity * Time.deltaTime;
+
+        // --- collision
+        if(!noclip) {
+            bounds = col.bounds;
+            bounds.Expand(-2 * skinWidth);
+
+            moveAmount = CollideAndSlide(moveAmount, transform.position, 0, moveAmount);
         }
 
         jumping = false;
         if(shouldJump && isGrounded) {
-            moveAmount.y = jumpForce;
+            gravityVector.y = jumpForce * Time.deltaTime;
             jumping = true;
         }
 
-
-        // --- collision
-        if(!noclip) {
-            Bounds bounds = col.bounds;
-            bounds.Expand(-2 * skinWidth);
-
-            moveAmount *= Time.deltaTime;
-
-            // -- ground
-            if(!jumping) {
-                GroundCollisions(ref moveAmount, bounds);
+        // --- gravity
+        if(useGravity) {
+            if(isGrounded && !jumping) {
+                gravityVector = new Vector3(0, gravity, 0) * Time.deltaTime * Time.deltaTime;
             }
-            else {
-                isGrounded = false;
+            else if(Mathf.Abs(gravityVector.y) < maxFallSpeed) {
+                gravityVector.y += gravity * Time.deltaTime * Time.deltaTime;
             }
-            // - handle slopes
-            // normal slope movement
-            if(isGrounded && onSlope && !sliding) {
-                float mag = groundSpeed.magnitude * Time.deltaTime;
-                moveAmount = Vector3.ProjectOnPlane(moveAmount, slopeNormal).normalized;
-                moveAmount *= mag;
-            }
-            // sliding down steep slope
-            else if(onSlope && sliding) {
-                float mag = moveAmount.magnitude;
-                moveAmount = Vector3.ProjectOnPlane(moveAmount, slopeNormal).normalized;
-                moveAmount *= mag;
-            }
-
-            // -- walls
-            WallCollisions(moveAmount, bounds);
-            // if hitting a wall, snap to it and slide along it
-            if(hittingWall) {
-                Vector3 moveToWall = moveAmount.normalized * wallHitDist;
-                Vector3 leftOver = moveAmount - moveToWall;
-
-                float scale = 1 - Vector3.Dot(wallNormal, -new Vector3(moveAmount.x, 0, moveAmount.z).normalized);
-                scale = -((scale-1)*(scale-1)) + 1;     // smooth out the scaling a little bit
-                float mag = leftOver.magnitude;
-                
-                Vector3 proj = Vector3.ProjectOnPlane(moveAmount, wallNormal).normalized;
-                moveAmount = new Vector3(moveToWall.x + (proj.x * mag * scale), moveAmount.y, moveToWall.z + (proj.z * mag * scale));
-            }
-
-            // -- ceiling
-            CeilingCollisions(ref moveAmount, bounds);
+            
+            moveAmount += CollideAndSlide(gravityVector, transform.position + moveAmount, 0, gravityVector, true);
         }
 
         // ACTUALLY MOVE THE RIGIDBODY
@@ -185,92 +165,94 @@ public class KinematicCharacterController : MonoBehaviour {
         Debug.DrawRay(rb.position, velocity, Color.green, Time.deltaTime);
     }
 
-    private void GroundCollisions(ref Vector3 moveAmount, Bounds bounds) {
-        float dist = moveAmount.y < 0 || onSlope ? Mathf.Abs(moveAmount.y) + skinWidth : 2*skinWidth;
-
-        RaycastHit hit;
-        Color color = Color.red;
-        if(
-            Physics.SphereCast( 
-                bounds.center,
-                bounds.extents.x,
-                Vector3.down,
-                out hit,
-                bounds.extents.y - bounds.extents.x + dist,
-                collisionMask
-            )
-        ) {
-            Debug.DrawRay(hit.point, hit.normal, Color.cyan, Time.deltaTime);
-            slopeNormal = hit.normal;
-            groundHitDist = hit.distance - (bounds.extents.y - bounds.extents.x) - skinWidth;
-            slopeAngle = Vector3.Angle(Vector3.up, slopeNormal);
-            onSlope = slopeAngle > 0.1f;
-            if(slopeAngle <= maxSlopeAngle) {
-                sliding = false;
-                isGrounded = true;
-                moveAmount.y = -(hit.distance - (bounds.extents.y - bounds.extents.x) - skinWidth);
-                color = Color.green;
-            }
-            else {
-                isGrounded = false;
-                sliding = true;
-            }
+    private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 originalMoveAmount, bool gravityPass = false) {
+        // just stop if we reach max depth (idek what scenario would have like 5+ surfaces all in one place lmao)
+        if(currentDepth == maxCollisionDepth) {
+            return Vector3.zero;
         }
         else {
-            isGrounded = false;
-            slopeNormal = Vector3.up;
-            onSlope = false;
-            sliding = false;
+            float dist = Mathf.Abs(startAmount.magnitude) + skinWidth;
+            RaycastHit hit;
+            // collision
+            if(
+                Physics.CapsuleCast( 
+                    startPos + new Vector3(0, col.radius, 0),
+                    startPos + new Vector3(0, col.height - col.radius, 0),
+                    bounds.extents.x,
+                    startAmount.normalized,
+                    out hit,
+                    dist,
+                    collisionMask
+                )
+            ) {
+                float hitDist = hit.distance;
+                float surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
+                float hitAngle = Vector3.Angle(-startAmount.normalized, hit.normal);
+                Vector3 snapToSurface = startAmount.normalized * (hit.distance - skinWidth);
+                Vector3 leftover = startAmount - snapToSurface;
+
+                // normal ground/slope movement
+                if(surfaceAngle <= maxSlopeAngle) {
+                    if(gravityPass) {
+                        return snapToSurface;
+                    }
+
+                    float mag = leftover.magnitude;
+                    leftover = Vector3.ProjectOnPlane(leftover, hit.normal).normalized;
+                    leftover *= mag;
+
+                    return snapToSurface + CollideAndSlide(leftover, startPos + snapToSurface, currentDepth+1, originalMoveAmount);
+                }
+                // if the angle is very close to zero, just collide and don't slide
+                else if(Mathf.Approximately(hitAngle, 0)) {
+                    return snapToSurface;
+                }
+                // hitting a wall
+                else {
+                    float mag = leftover.magnitude;
+                    float scale = 1 - Vector3.Dot(hit.normal, -new Vector3(originalMoveAmount.x, 0, originalMoveAmount.z).normalized);
+                    scale = -((scale-1)*(scale-1)) + 1;     // smooth out the scaling a little bit
+                    
+                    leftover = Vector3.ProjectOnPlane(leftover, hit.normal).normalized;
+                    leftover = new Vector3(leftover.x * mag * scale, 0, leftover.z * mag * scale);
+
+
+                    return snapToSurface + CollideAndSlide(leftover, startPos + snapToSurface, currentDepth+1, originalMoveAmount);
+                }
+
+            }
+            // no collision
+            else {
+                return startAmount;
+            }
         }
-        Debug.DrawRay(bounds.center - new Vector3(0, bounds.extents.x, 0), Vector3.down * (bounds.extents.y - bounds.extents.x + dist), color, Time.deltaTime);
     }
 
-    private void WallCollisions(Vector3 moveAmount, Bounds bounds) {
-        hittingWall = false;
-        float dist = moveAmount.magnitude + skinWidth;
-        // if on slope, cast along movement direction, otherwise just cast forward
-        Vector3 direction = onSlope ? moveAmount.normalized : new Vector3(moveAmount.x, 0, moveAmount.z).normalized;
+    private bool GroundCheck(Vector3 moveAmount) {
+
+        float dist = moveAmount.y < 0 ? Mathf.Abs(moveAmount.y) + skinWidth : 2 * skinWidth;
 
         RaycastHit hit;
-        Color color = Color.blue;
         if(
-            Physics.CapsuleCast( 
-                bounds.center + new Vector3(0, col.height/2 - col.radius, 0),
+            Physics.SphereCast( 
                 bounds.center - new Vector3(0, col.height/2 - col.radius, 0),
                 bounds.extents.x,
-                direction,
+                Vector3.down,
                 out hit,
                 dist,
                 collisionMask
             )
         ) {
-            wallNormal = hit.normal;
-            wallHitDist = hit.distance - skinWidth;
-            Debug.DrawRay(hit.point, hit.normal, Color.magenta, Time.deltaTime);
-            
+            groundHitDist = hit.distance;
             float angle = Vector3.Angle(Vector3.up, hit.normal);
-            if(angle >= minWallAngle && angle < minCeilingAngle) {
-                color = Color.cyan;
-                hittingWall = true;
+            slopeAngle = angle;
+            slopeNormal = hit.normal;
+            if(angle <= maxSlopeAngle) {
+                onSlope = angle > 0.1f;
+                return true;
             }
         }
-        
-        Debug.DrawRay(
-            bounds.center + new Vector3(moveAmount.x, 0, moveAmount.z).normalized * bounds.extents.x,
-            direction * dist,
-            color,
-            Time.deltaTime
-        );
-        // Debug.DrawRay(
-        //     bounds.center + (new Vector3(moveAmount.x, 0, moveAmount.z).normalized * bounds.extents.x) + moveAmount.normalized * dist,
-        //     Vector3.up,
-        //     Color.white,
-        //     5
-        // );
-    }
-
-    private void CeilingCollisions(ref Vector3 moveAmount, Bounds bounds) {
-
+        return false;
     }
 
     public Vector3 GetVelocity() {

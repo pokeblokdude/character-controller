@@ -6,6 +6,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(KinematicCharacterController))]
 public class Player : MonoBehaviour {
     
+    public Transform spawnPos;
     public Transform camTarget;
     public Text text;
 
@@ -38,6 +39,9 @@ public class Player : MonoBehaviour {
         input.Player.Jump.canceled += ctx => {
             jump = false;
         };
+        input.Player.Reset.performed += ctx => {
+            transform.position = spawnPos.position;
+        };
         #endregion
 
         controller = GetComponent<KinematicCharacterController>();
@@ -57,8 +61,8 @@ public class Player : MonoBehaviour {
         direction.y = 0;
         direction.Normalize();
         Vector2 dir = new Vector2(direction.x, direction.z);
-        controller.Move(new Vector2(0, 1), jump);
-        // controller.Move(dir, jump);
+        // controller.Move(new Vector2(0, 1), jump);
+        controller.Move(dir, jump);
         setDebugText();
     }
 

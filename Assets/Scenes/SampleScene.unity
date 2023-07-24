@@ -270,7 +270,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 228655932}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.908133, y: 2.05, z: -0.31407857}
+  m_LocalPosition: {x: -10.378512, y: 2.05, z: -0.4707241}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -358,7 +358,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 229023569}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.4, y: 0.1, z: 3.433}
+  m_LocalPosition: {x: -8.14, y: 0.1, z: 3.433}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -379,6 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 385d6ffe544c08a489d4f7e2b1399496, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawnPos: {fileID: 536735299}
   camTarget: {fileID: 1174038225}
   text: {fileID: 655015234}
 --- !u!114 &229023574
@@ -404,10 +405,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   skinWidth: 0.015
-  maxSlopeAngle: 60
-  minWallAngle: 89
-  minCeilingAngle: 179
-  maxStepHeight: 0.2
+  maxCollisionDepth: 5
+  maxSlopeAngle: 55
   jumpHeight: 2
   jumpDistance: 4
 --- !u!1 &231710689
@@ -425,7 +424,7 @@ GameObject:
   - component: {fileID: 231710691}
   - component: {fileID: 231710690}
   m_Layer: 7
-  m_Name: Prism (3)
+  m_Name: Ramp4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -741,7 +740,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &242261051
 GameObject:
@@ -884,7 +883,7 @@ GameObject:
   - component: {fileID: 245348958}
   - component: {fileID: 245348957}
   m_Layer: 0
-  m_Name: Sphere (4)
+  m_Name: PhysicsSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1001,7 +1000,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 32
+  m_RootOrder: 35
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &342616420
 Mesh:
@@ -1181,7 +1180,7 @@ GameObject:
   - component: {fileID: 357332131}
   - component: {fileID: 357332130}
   m_Layer: 7
-  m_Name: Cube
+  m_Name: ramp wall 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1265,14 +1264,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 357332129}
-  m_LocalRotation: {x: -0.3826834, y: -0, z: -0, w: 0.92387956}
-  m_LocalPosition: {x: -5.4361076, y: -0.22, z: 4.29}
+  m_LocalRotation: {x: -0.21899472, y: 0, z: 0, w: 0.97572607}
+  m_LocalPosition: {x: -8.1, y: -0.75, z: 6.67}
   m_LocalScale: {x: 3.0506, y: 3.0506, z: 3.0506}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 19
-  m_LocalEulerAnglesHint: {x: -45, y: 0, z: 0}
+  m_RootOrder: 20
+  m_LocalEulerAnglesHint: {x: -25.3, y: 0, z: 0}
 --- !u!43 &369651040
 Mesh:
   m_ObjectHideFlags: 0
@@ -1617,7 +1616,7 @@ GameObject:
   - component: {fileID: 404336548}
   - component: {fileID: 404336547}
   m_Layer: 0
-  m_Name: Sphere (2)
+  m_Name: PhysicsSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1734,7 +1733,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 30
+  m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &439496417
 Mesh:
@@ -2136,7 +2135,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 477976038}
-  m_LocalRotation: {x: 0.031855553, y: -0.2890766, z: 0.009625202, w: 0.9567274}
+  m_LocalRotation: {x: 0.032156665, y: 0.25725374, z: -0.008565618, w: 0.9657707}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2215,6 +2214,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &536735298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 536735299}
+  m_Layer: 0
+  m_Name: SpawnPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &536735299
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536735298}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.26, y: 0, z: -5.59}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &571817971
 GameObject:
@@ -2473,7 +2503,7 @@ GameObject:
   - component: {fileID: 646817720}
   - component: {fileID: 646817719}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: PhysicsSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2590,7 +2620,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 28
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &655015232
 GameObject:
@@ -2803,7 +2833,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 23
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
@@ -2969,7 +2999,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716985119}
-  m_LocalRotation: {x: -0.028791457, y: -0.28910598, z: -0.008699382, w: 0.95682454}
+  m_LocalRotation: {x: -0.029063603, y: 0.25727984, z: 0.007741713, w: 0.9658688}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2993,7 +3023,7 @@ GameObject:
   - component: {fileID: 746606680}
   - component: {fileID: 746606679}
   m_Layer: 7
-  m_Name: Prism (1)
+  m_Name: Ramp3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3309,7 +3339,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &791189182
 Mesh:
@@ -4978,7 +5008,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 17
+  m_RootOrder: 18
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &802386773
 GameObject:
@@ -4995,7 +5025,7 @@ GameObject:
   - component: {fileID: 802386775}
   - component: {fileID: 802386774}
   m_Layer: 7
-  m_Name: Prism (4)
+  m_Name: Ramp5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5267,24 +5297,24 @@ MonoBehaviour:
   - {x: -1, y: 0, z: 0, w: -1}
   - {x: -1, y: 0, z: 0, w: -1}
   m_Colors:
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
-  - {r: 0.18, g: 0.8, b: 0.251, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
+  - {r: 1, g: 0.255, b: 0.212, a: 1}
   m_UnwrapParameters:
     m_HardAngle: 88
     m_PackMargin: 20
@@ -5293,7 +5323,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 2115462436}
-  m_VersionIndex: 2529
+  m_VersionIndex: 2532
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -5311,7 +5341,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -5399,8 +5429,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.001410561, y: -0.2892365, z: 0.00042620252, w: 0.95725656}
-  m_LocalPosition: {x: -10.908133, y: 2.05, z: -0.31407857}
+  m_LocalRotation: {x: 0.0014238916, y: 0.25739604, z: -0.00037928476, w: 0.9663049}
+  m_LocalPosition: {x: -10.378512, y: 2.05, z: -0.4707241}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7003,7 +7033,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &1039028432
 GameObject:
@@ -7136,7 +7166,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 24
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1048382233
 GameObject:
@@ -9033,7 +9063,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 18
+  m_RootOrder: 19
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1052641128
 GameObject:
@@ -9166,7 +9196,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 26
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1068913468
 GameObject:
@@ -9296,6 +9326,111 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.87, y: 0.5, z: -15.17}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 24
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1151756073
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1151756077}
+  - component: {fileID: 1151756076}
+  - component: {fileID: 1151756075}
+  - component: {fileID: 1151756074}
+  m_Layer: 7
+  m_Name: ramp wall 2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &1151756074
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151756073}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1151756075
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151756073}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1151756076
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151756073}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1151756077
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1151756073}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -8.1, y: 1.51, z: 8.92}
+  m_LocalScale: {x: 3.0506, y: 3.0506, z: 3.0506}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -10834,7 +10969,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &1345836780
 GameObject:
@@ -10851,7 +10986,7 @@ GameObject:
   - component: {fileID: 1345836782}
   - component: {fileID: 1345836781}
   m_Layer: 7
-  m_Name: Prism (2)
+  m_Name: Ramp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11167,7 +11302,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1418838208
 GameObject:
@@ -11310,7 +11445,7 @@ GameObject:
   - component: {fileID: 1429453336}
   - component: {fileID: 1429453335}
   m_Layer: 0
-  m_Name: Sphere (1)
+  m_Name: PhysicsSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11427,7 +11562,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 29
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1439742845
 GameObject:
@@ -11444,7 +11579,7 @@ GameObject:
   - component: {fileID: 1439742847}
   - component: {fileID: 1439742846}
   m_Layer: 7
-  m_Name: Cube (1)
+  m_Name: ramp wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11899,7 +12034,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 33
+  m_RootOrder: 22
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1455716064
 Mesh:
@@ -12208,7 +12343,7 @@ GameObject:
   - component: {fileID: 1546407856}
   - component: {fileID: 1546407855}
   m_Layer: 7
-  m_Name: Cube (2)
+  m_Name: Multi-slope
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13612,7 +13747,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 34
+  m_RootOrder: 36
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1573091226
 Mesh:
@@ -13849,7 +13984,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1586110062}
-  m_LocalRotation: {x: 0.0014105596, y: -0.2892365, z: 0.00042620266, w: 0.95725656}
+  m_LocalRotation: {x: 0.001423892, y: 0.257396, z: -0.00037928415, w: 0.9663049}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13872,7 +14007,7 @@ GameObject:
   - component: {fileID: 1607984265}
   - component: {fileID: 1607984264}
   m_Layer: 7
-  m_Name: Plane
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15235,7 +15370,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &1644500031
 Mesh:
@@ -15416,7 +15551,7 @@ GameObject:
   - component: {fileID: 1663421792}
   - component: {fileID: 1663421791}
   m_Layer: 0
-  m_Name: Sphere (3)
+  m_Name: PhysicsSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15533,7 +15668,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 31
+  m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1714939576
 GameObject:
@@ -15666,7 +15801,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 22
+  m_RootOrder: 25
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!850595691 &1739915494
 LightingSettings:
@@ -16028,7 +16163,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 27
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1849940448
 GameObject:
@@ -16244,7 +16379,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 20
+  m_RootOrder: 23
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1896371091
 GameObject:
@@ -17748,7 +17883,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!1 &1927413573
 GameObject:
@@ -17765,7 +17900,7 @@ GameObject:
   - component: {fileID: 1927413575}
   - component: {fileID: 1927413574}
   m_Layer: 7
-  m_Name: Prism (5)
+  m_Name: RampSteep
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18081,7 +18216,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1961630928
 GameObject:
@@ -18098,7 +18233,7 @@ GameObject:
   - component: {fileID: 1961630930}
   - component: {fileID: 1961630929}
   m_Layer: 7
-  m_Name: Prism
+  m_Name: Ramp2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18414,7 +18549,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1989540259
 GameObject:
@@ -18547,7 +18682,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 25
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!43 &2002312698
 Mesh:
@@ -19079,7 +19214,7 @@ Mesh:
       format: 0
       dimension: 0
     m_DataSize: 1152
-    _typelessdata: c6081a4000000000000000b50000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bfec51383ecdcc4c3f1283803e0000803faaf696b421c40934c8081a4000000000bcb5bb400000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bfec51383ecdcc4c3f1283803e0000803fbcb5bb4021c40934c8081a406b1d8f40bbb53b400000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bfec51383ecdcc4c3f1283803e0000803fbcb53b406b1d8f40c8081a4000000000bcb5bb4001e4313590630c3f8312563f000080bf90630ca95cbb5435000080bfec51383ecdcc4c3f1283803e0000803fb5081ac0cce04dc00000003500000000c0b5bb408020483590630c3f8312563f000080bff6e3313333086835000080bfec51383ecdcc4c3f1283803e0000803fe4fb8b36cce04dc0c8081a406b1d8f40bbb53b408020483590630c3f8312563f000080bff6e3313333086835000080bfec51383ecdcc4c3f1283803e0000803fbe081ac07a690840000000006b1d8f40c5b53b40ff5c5e358f630c3f8312563f000080bffbe3b1330a557b35000080bfec51383ecdcc4c3f1283803e0000803fe8fb1b36796908400000003500000000c0b5bb40000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bfec51383ecdcc4c3f1283803e0000803fc0b5bbc0c14116a90000c0340000000000001036000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bfec51383ecdcc4c3f1283803e0000803f000010b6c14116a9000000006b1d8f40c5b53b40000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bfec51383ecdcc4c3f1283803e0000803fc5b53bc06b1d8f400000c0340000000000001036859974b590630c3f831256bf0000803f90630c29d14092b5000080bfec51383ecdcc4c3f1283803e0000803faeffbf3404f09d35c6081a4000000000000000b5427b69b590630c3f831256bf0000803f90630c29f49a8bb5000080bfec51383ecdcc4c3f1283803e0000803fc6081a4005f09d35000000006b1d8f40c5b53b40427b69b590630c3f831256bf0000803f90630c29f49a8bb5000080bfec51383ecdcc4c3f1283803e0000803f627a56b62525ab40c8081a406b1d8f40bbb53b40ff5c5eb590630c3f831256bf0000803f0000000018f584b5000080bfec51383ecdcc4c3f1283803e0000803fbb081a402525ab40c6081a4000000000000000b500000000000080bf00000000000080bf0000000000000000000080bfec51383ecdcc4c3f1283803e0000803fc6081ac0000000b5c8081a4000000000bcb5bb4000000000000080bf00000000000080bf0000000000000000000080bfec51383ecdcc4c3f1283803e0000803fc8081ac0bcb5bb400000c034000000000000103600000000000080bf00000000000080bf0000000000000000000080bfec51383ecdcc4c3f1283803e0000803f0000c0b4000010360000003500000000c0b5bb4000000000000080bf00000000000080bf0000000000000000000080bfec51383ecdcc4c3f1283803e0000803f000000b5c0b5bb40
+    _typelessdata: c6081a4000000000000000b50000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bf0000803f5c8f823e8716593e0000803faaf696b421c40934c8081a4000000000bcb5bb400000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bf0000803f5c8f823e8716593e0000803fbcb5bb4021c40934c8081a406b1d8f40bbb53b400000803f7ef664b33691aeb33691ae337ef6e41b0000803f000080bf0000803f5c8f823e8716593e0000803fbcb53b406b1d8f40c8081a4000000000bcb5bb4001e4313590630c3f8312563f000080bf90630ca95cbb5435000080bf0000803f5c8f823e8716593e0000803fb5081ac0cce04dc00000003500000000c0b5bb408020483590630c3f8312563f000080bff6e3313333086835000080bf0000803f5c8f823e8716593e0000803fe4fb8b36cce04dc0c8081a406b1d8f40bbb53b408020483590630c3f8312563f000080bff6e3313333086835000080bf0000803f5c8f823e8716593e0000803fbe081ac07a690840000000006b1d8f40c5b53b40ff5c5e358f630c3f8312563f000080bffbe3b1330a557b35000080bf0000803f5c8f823e8716593e0000803fe8fb1b36796908400000003500000000c0b5bb40000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bf0000803f5c8f823e8716593e0000803fc0b5bbc0c14116a90000c0340000000000001036000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bf0000803f5c8f823e8716593e0000803f000010b6c14116a9000000006b1d8f40c5b53b40000080bfae57c8b33791ae323791aeb2ae57481b000080bf000080bf0000803f5c8f823e8716593e0000803fc5b53bc06b1d8f400000c0340000000000001036859974b590630c3f831256bf0000803f90630c29d14092b5000080bf0000803f5c8f823e8716593e0000803faeffbf3404f09d35c6081a4000000000000000b5427b69b590630c3f831256bf0000803f90630c29f49a8bb5000080bf0000803f5c8f823e8716593e0000803fc6081a4005f09d35000000006b1d8f40c5b53b40427b69b590630c3f831256bf0000803f90630c29f49a8bb5000080bf0000803f5c8f823e8716593e0000803f627a56b62525ab40c8081a406b1d8f40bbb53b40ff5c5eb590630c3f831256bf0000803f0000000018f584b5000080bf0000803f5c8f823e8716593e0000803fbb081a402525ab40c6081a4000000000000000b500000000000080bf00000000000080bf0000000000000000000080bf0000803f5c8f823e8716593e0000803fc6081ac0000000b5c8081a4000000000bcb5bb4000000000000080bf00000000000080bf0000000000000000000080bf0000803f5c8f823e8716593e0000803fc8081ac0bcb5bb400000c034000000000000103600000000000080bf00000000000080bf0000000000000000000080bf0000803f5c8f823e8716593e0000803f0000c0b4000010360000003500000000c0b5bb4000000000000080bf00000000000080bf0000000000000000000080bf0000803f5c8f823e8716593e0000803f000000b5c0b5bb40
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
