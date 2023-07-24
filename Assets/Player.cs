@@ -42,6 +42,12 @@ public class Player : MonoBehaviour {
         input.Player.Reset.performed += ctx => {
             transform.position = spawnPos.position;
         };
+        input.Player.Sprint.performed += ctx => {
+            controller.isSprinting = true;
+        };
+        input.Player.Sprint.canceled += ctx => {
+            controller.isSprinting = false;
+        };
         #endregion
 
         controller = GetComponent<KinematicCharacterController>();
@@ -83,7 +89,7 @@ public class Player : MonoBehaviour {
                         $"On Slope: {controller.onSlope}\n" +
                         $"Slope Angle: {controller.slopeAngle}\n" +
                         $"Sliding: {controller.sliding}\n" +
-                        $"Hitting Wall: {controller.hittingWall}\n" +
+                        // $"Hitting Wall: {controller.hittingWall}\n" +
 
                         $"Jump: {jump}\n"
                         //$"Jump Buffer: {jumpBufferCounter}\n"

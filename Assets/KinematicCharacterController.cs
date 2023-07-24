@@ -13,6 +13,9 @@ public class KinematicCharacterController : MonoBehaviour {
 
     [Tooltip("The maximum movement speed. For non-acceleration movement, this is the only speed.")]
     public float maxSpeed = 5;
+
+    [Tooltip("The maximum movement speed when sprinting.")]
+    public float maxSprintSpeed = 10;
     
     [Tooltip("The amount of time it takes to reach full speed from a stand-still.")]
     public float accelTime = 0.25f;
@@ -44,6 +47,9 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("The maximum angle at which the controller will treat the surface like a slope. Must be less than minWallAngle.")]
     [Range(1, 89)] public float maxSlopeAngle = 55;
     
+    [Tooltip("The minimum angle at which the controller will treat a surface like a flat ceiling, stopping vertical movement.")]
+    public float minCeilingAngle = 160;
+
     // [Tooltip("The maximum height for a wall to be considered a step that the controller will snap up onto.")]
     // public float maxStepHeight = 0.2f;
     
@@ -61,15 +67,17 @@ public class KinematicCharacterController : MonoBehaviour {
     private Vector3 velocity;
     public bool isGrounded { get; private set; } = false;
     private float groundHitDist;
+    public bool isBumpingHead { get; private set; }
+
+    public bool isSprinting { get; set; } = false;
 
     public bool onSlope { get; private set; }
     public float slopeAngle { get; private set; }
     public bool sliding { get; private set; }
     private Vector3 slopeNormal;
     
-    private Vector3 wallNormal;
-    private float wallHitDist;
-    public bool hittingWall { get; private set; }
+    private Vector3 finalWallHitPoint;
+    private Vector3 finalWallHitNormal;
 
     public float gravity { get; private set; }
     private Vector3 gravityVector;
@@ -98,6 +106,10 @@ public class KinematicCharacterController : MonoBehaviour {
         deccel = maxSpeed / deccelTime;
     }
 
+    /// <summary>
+    ///     Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using the
+    ///     "collide and slide" algorithm.
+    /// </summary>
     public void Move(Vector2 dir, bool shouldJump) {
         bool move = dir != Vector2.zero;
         Vector3 moveAmount;
@@ -105,7 +117,7 @@ public class KinematicCharacterController : MonoBehaviour {
         // --- movement input
         // instant
         if(!useAcceleration) {
-            groundSpeed = dir * maxSpeed;
+            groundSpeed = dir * (isSprinting ? maxSprintSpeed : maxSpeed);
         }
         // acceleration
         else {
@@ -124,7 +136,8 @@ public class KinematicCharacterController : MonoBehaviour {
         }
         moveAmount = new Vector3(groundSpeed.x, 0, groundSpeed.y) * Time.deltaTime;
 
-        isGrounded = GroundCheck(moveAmount * Time.deltaTime);
+        isGrounded = GroundCheck(moveAmount);
+        isBumpingHead = CeilingCheck(moveAmount);
 
         if(isGrounded && onSlope) {
             float mag = moveAmount.magnitude;
@@ -138,6 +151,7 @@ public class KinematicCharacterController : MonoBehaviour {
             bounds.Expand(-2 * skinWidth);
 
             moveAmount = CollideAndSlide(moveAmount, transform.position, 0, moveAmount);
+            Debug.DrawRay(finalWallHitPoint, finalWallHitNormal, Color.cyan, Time.deltaTime);
         }
 
         jumping = false;
@@ -148,7 +162,7 @@ public class KinematicCharacterController : MonoBehaviour {
 
         // --- gravity
         if(useGravity) {
-            if(isGrounded && !jumping) {
+            if((isGrounded || isBumpingHead) && !jumping) {
                 gravityVector = new Vector3(0, gravity, 0) * Time.deltaTime * Time.deltaTime;
             }
             else if(Mathf.Abs(gravityVector.y) < maxFallSpeed) {
@@ -168,6 +182,7 @@ public class KinematicCharacterController : MonoBehaviour {
     private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 originalMoveAmount, bool gravityPass = false) {
         // just stop if we reach max depth (idek what scenario would have like 5+ surfaces all in one place lmao)
         if(currentDepth == maxCollisionDepth) {
+            Debug.LogWarning("Maxing out collision depth");
             return Vector3.zero;
         }
         else {
@@ -185,6 +200,9 @@ public class KinematicCharacterController : MonoBehaviour {
                     collisionMask
                 )
             ) {
+                finalWallHitPoint = hit.point;
+                finalWallHitNormal = hit.normal;
+
                 float hitDist = hit.distance;
                 float surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
                 float hitAngle = Vector3.Angle(-startAmount.normalized, hit.normal);
@@ -229,6 +247,7 @@ public class KinematicCharacterController : MonoBehaviour {
     }
 
     private bool GroundCheck(Vector3 moveAmount) {
+        sliding = false;
 
         float dist = moveAmount.y < 0 ? Mathf.Abs(moveAmount.y) + skinWidth : 2 * skinWidth;
 
@@ -249,6 +268,32 @@ public class KinematicCharacterController : MonoBehaviour {
             slopeNormal = hit.normal;
             if(angle <= maxSlopeAngle) {
                 onSlope = angle > 0.1f;
+                return true;
+            }
+            else {
+                sliding = true;
+            }
+        }
+        return false;
+    }
+
+    private bool CeilingCheck(Vector3 moveAmount) {
+        float dist = moveAmount.y > 0 ? moveAmount.y + skinWidth : 2 * skinWidth;
+
+        RaycastHit hit;
+        if(
+            Physics.SphereCast( 
+                bounds.center + new Vector3(0, col.height/2 - col.radius, 0),
+                bounds.extents.x,
+                Vector3.up,
+                out hit,
+                dist,
+                collisionMask
+            )
+        ) {
+            float angle = Vector3.Angle(Vector3.up, hit.normal);
+            float hitAngle = Vector3.Angle(moveAmount.normalized, hit.normal);
+            if(angle >= minCeilingAngle || hitAngle >= minCeilingAngle) {
                 return true;
             }
         }
