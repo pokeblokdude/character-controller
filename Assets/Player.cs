@@ -59,7 +59,7 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        
+        setDebugText();
     }
 
     void FixedUpdate() {
@@ -67,9 +67,8 @@ public class Player : MonoBehaviour {
         direction.y = 0;
         direction.Normalize();
         Vector2 dir = new Vector2(direction.x, direction.z);
-        // controller.Move(new Vector2(0, 1), jump);
+        // controller.Move(new Vector2(-1, 0), jump);
         controller.Move(dir, jump);
-        setDebugText();
     }
 
     void setDebugText() {
