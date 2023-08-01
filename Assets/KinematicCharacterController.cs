@@ -289,7 +289,7 @@ public class KinematicCharacterController : MonoBehaviour {
     private bool GroundCheck(Vector3 moveAmount) {
         isSliding = false;
 
-        float dist = gravityVector.y < 0 ? Mathf.Abs(gravityVector.y) + skinWidth : 2 * skinWidth;
+        float dist = 2 * skinWidth;
 
         RaycastHit hit;
         if(
