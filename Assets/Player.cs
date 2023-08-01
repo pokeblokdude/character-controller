@@ -18,6 +18,8 @@ public class Player : MonoBehaviour {
     float lookX;
     bool jump;
 
+    Vector3 velocity;
+
     void Awake() {
         #region input
         input = new InputActions();
@@ -68,7 +70,7 @@ public class Player : MonoBehaviour {
         direction.Normalize();
         Vector2 dir = new Vector2(direction.x, direction.z);
         // controller.Move(new Vector2(-1, 0), jump);
-        controller.Move(dir, jump);
+        velocity = controller.Move(dir, jump);
     }
 
     void setDebugText() {
@@ -77,17 +79,17 @@ public class Player : MonoBehaviour {
                         $"Timescale: {Time.timeScale}\n\n" +
 
                         $"Gravity: {controller.gravity}\n" +
-                        $"Speed: {controller.GetVelocity().magnitude.ToString("f2")}\n" +
+                        $"Speed: {velocity.magnitude.ToString("f2")}\n" +
                         //$"Acceleration: {controller.Acceleration().ToString("F4")}\n" +
-                        $"Velocity: {controller.GetVelocity().ToString("F6")}\n" +
+                        $"Velocity: {velocity.ToString("F6")}\n" +
                         $"Position: {transform.position.ToString("F4")}\n" +
                         $"MoveDir: {moveDir}\n" +
                         $"LookDir: {transform.forward.ToString("f2")}\n\n" +
                         
                         $"Grounded: {controller.isGrounded}\n" +
-                        $"On Slope: {controller.onSlope}\n" +
+                        $"On Slope: {controller.isOnSlope}\n" +
                         $"Slope Angle: {controller.slopeAngle}\n" +
-                        $"Sliding: {controller.sliding}\n" +
+                        $"Sliding: {controller.isSliding}\n" +
                         // $"Hitting Wall: {controller.hittingWall}\n" +
 
                         $"Jump: {jump}\n"

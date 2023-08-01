@@ -42,7 +42,7 @@ public class KinematicCharacterController : MonoBehaviour {
     public float skinWidth = 0.015f;
 
     [Tooltip("The maximum number of recursive collision \"bounces\" before the controller will stop.")]
-    public int maxCollisionDepth = 5;
+    [SerializeField] private int maxCollisionDepth = 5;
     
     [Tooltip("The maximum angle at which the controller will treat the surface like a slope. Must be less than minWallAngle.")]
     [Range(1, 89)] public float maxSlopeAngle = 55;
@@ -53,7 +53,6 @@ public class KinematicCharacterController : MonoBehaviour {
     // [Tooltip("The maximum height for a wall to be considered a step that the controller will snap up onto.")]
     // public float maxStepHeight = 0.2f;
     
-    
     [Header("Jump")]
 
     [Tooltip("The height the controller can jump. Determines gravity along with jumpDistance.")]
@@ -62,23 +61,23 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("The distance the controller can jump when moving at maxSpeed. Determines gravity along with jumpHeight.")]
     public float jumpDistance = 4;
 
-    
+
+    [Header("Debug")]
+    public bool SHOW_DEBUG = false;
+
     private Vector2 groundSpeed;
     private Vector3 velocity;
     public bool isGrounded { get; private set; } = false;
-    private float groundHitDist;
     public bool isBumpingHead { get; private set; }
 
-    public bool isSprinting { get; set; } = false;
-
-    public bool onSlope { get; private set; }
+    public bool isSliding { get; private set; }
+    public bool isOnSlope { get; private set; }
     public float slopeAngle { get; private set; }
-    public bool sliding { get; private set; }
     private Vector3 slopeNormal;
-    
-    private Vector3 finalWallHitPoint;
-    private Vector3 finalWallHitNormal;
+
     private List<RaycastHit> hitPoints;
+    
+    public bool isSprinting { get; set; } = false;
 
     public float gravity { get; private set; }
     private Vector3 gravityVector;
@@ -111,23 +110,35 @@ public class KinematicCharacterController : MonoBehaviour {
         hitPoints = new List<RaycastHit>();
     }
 
-    void OnDrawGizmos() {
-        if(hitPoints == null) { return; }
+    void Update() {
+#if UNITY_EDITOR
+        float halfDist = jumpDistance/2;
+        gravity = (-2 * jumpHeight * maxSpeed * maxSpeed) / (halfDist * halfDist);
+        jumpForce = (2 * jumpHeight * maxSpeed) / halfDist;
+        accel = maxSpeed / accelTime;
+        deccel = maxSpeed / deccelTime;
+#endif
+    }
 
-        int i = 0;
-        foreach(RaycastHit hit in hitPoints) {
-            Color color = colors[i % (colors.Length-1)];
-            Gizmos.DrawWireSphere(hit.point, 0.1f);
-            Debug.DrawRay(hit.point, hit.normal, color, Time.deltaTime);
-            i++;
+    void OnDrawGizmos() {
+        if(SHOW_DEBUG) {
+            if(hitPoints == null) { return; }
+
+            int i = 0;
+            foreach(RaycastHit hit in hitPoints) {
+                Color color = colors[i % (colors.Length-1)];
+                Gizmos.DrawWireSphere(hit.point, 0.1f);
+                Debug.DrawRay(hit.point, hit.normal, color, Time.deltaTime);
+                i++;
+            }
         }
     }
 
     /// <summary>
     ///     Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using the
-    ///     "collide and slide" algorithm.
+    ///     "collide and slide" algorithm. Returns the current velocity.
     /// </summary>
-    public void Move(Vector2 dir, bool shouldJump) {
+    public Vector3 Move(Vector2 dir, bool shouldJump) {
         bool move = dir != Vector2.zero;
         Vector3 moveAmount;
 
@@ -156,7 +167,7 @@ public class KinematicCharacterController : MonoBehaviour {
         isGrounded = GroundCheck(moveAmount);
         isBumpingHead = CeilingCheck(moveAmount);
 
-        if(isGrounded && onSlope && !isBumpingHead) {
+        if(isGrounded && isOnSlope && !isBumpingHead) {
             moveAmount = ProjectAndScale(moveAmount, slopeNormal);
         }
 
@@ -192,12 +203,14 @@ public class KinematicCharacterController : MonoBehaviour {
         rb.MovePosition(transform.position + moveAmount);
         
         velocity = moveAmount / Time.deltaTime;
-        Debug.DrawRay(rb.position, velocity, Color.green, Time.deltaTime);
+        if(SHOW_DEBUG) Debug.DrawRay(rb.position, velocity, Color.green, Time.deltaTime);
+
+        return velocity;
     }
 
     private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 originalMoveAmount, bool gravityPass = false) {
         // just stop if we reach max depth (idek what scenario would have like 5+ surfaces all in one place lmao)
-        if(currentDepth == maxCollisionDepth) {
+        if(currentDepth >= maxCollisionDepth) {
             Debug.LogWarning("Maxing out collision depth");
             return Vector3.zero;
         }
@@ -207,7 +220,6 @@ public class KinematicCharacterController : MonoBehaviour {
         else {
             float dist = Mathf.Abs(startAmount.magnitude) + skinWidth;
             RaycastHit hit;
-            // collision
             if(
                 Physics.CapsuleCast( 
                     startPos + new Vector3(0, col.radius, 0),
@@ -244,12 +256,14 @@ public class KinematicCharacterController : MonoBehaviour {
                         new Vector3(hit.normal.x, 0, hit.normal.z).normalized,
                         -new Vector3(originalMoveAmount.x, 0, originalMoveAmount.z).normalized
                     );
-                    // smooth out the scaling a little bit ( -(x-1)^2 + 1 or inverse parabola )
-                    scale = -((scale-1)*(scale-1)) + 1;
+                    scale = -((scale-1)*(scale-1)) + 1;     // smooth out the scaling to be non-linear
                     
                     // if grounded and encounter a steep slope, treat it as a flat wall on flat ground
                     if(isGrounded && !gravityPass) {
-                        leftover = ProjectAndScale(new Vector3(leftover.x, 0, leftover.z), new Vector3(hit.normal.x, 0, hit.normal.z).normalized) * scale;
+                        leftover = ProjectAndScale(
+                            new Vector3(leftover.x, 0, leftover.z),
+                            new Vector3(hit.normal.x, 0, hit.normal.z).normalized
+                        ) * scale;
                     }
                     else {
                         leftover = ProjectAndScale(leftover, hit.normal) * scale;
@@ -258,10 +272,9 @@ public class KinematicCharacterController : MonoBehaviour {
 
                 return snapToSurface + CollideAndSlide(leftover, startPos + snapToSurface, currentDepth+1, originalMoveAmount);
             }
+
             // no collision
-            else {
-                return startAmount;
-            }
+            return startAmount;
         }
     }
 
@@ -274,7 +287,7 @@ public class KinematicCharacterController : MonoBehaviour {
     }
 
     private bool GroundCheck(Vector3 moveAmount) {
-        sliding = false;
+        isSliding = false;
 
         float dist = gravityVector.y < 0 ? Mathf.Abs(gravityVector.y) + skinWidth : 2 * skinWidth;
 
@@ -289,16 +302,15 @@ public class KinematicCharacterController : MonoBehaviour {
                 collisionMask
             )
         ) {
-            groundHitDist = hit.distance;
             float angle = Vector3.Angle(Vector3.up, hit.normal);
             slopeAngle = angle;
             slopeNormal = hit.normal;
             if(angle <= maxSlopeAngle) {
-                onSlope = angle > 0.1f;
+                isOnSlope = angle > 0.1f;
                 return true;
             }
             else {
-                sliding = true;
+                isSliding = true;
             }
         }
         return false;
@@ -325,9 +337,5 @@ public class KinematicCharacterController : MonoBehaviour {
             }
         }
         return false;
-    }
-
-    public Vector3 GetVelocity() {
-        return new Vector3(velocity.x, velocity.y, velocity.z);
     }
 }

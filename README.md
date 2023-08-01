@@ -8,10 +8,18 @@ https://youtu.be/YR6Q7dUz2uk
 This controller can be used in both first and third-person games. There is only one public method, desribed below. Currently you could think of it as equivalent to the built-in controller's `SimpleMove()` function. All you need to do is provide an unscaled `moveAmount`.
 
 ```cs
-public void Move(Vector2 moveAmount, bool shouldJump)
+public Vector3 Move(Vector2 moveAmount, bool shouldJump)
 ```
-- `moveAmount`: a 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`).
-- `shouldJump`: whether or not the controller should try to jump this frame.
+#### Parameters
+`moveAmount`: `Vector3` \
+A 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`).
+
+`shouldJump`: `bool` \
+Whether or not the controller should try to jump this frame.
+
+#### Returns
+`Vector3` \
+A 3D vector representing the controller's new (unscaled) velocity after gravity and collisions.
 
 ## Features
 My character controller currently supports

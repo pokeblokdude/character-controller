@@ -445,6 +445,7 @@ MonoBehaviour:
   minCeilingAngle: 160
   jumpHeight: 2
   jumpDistance: 4
+  SHOW_DEBUG: 0
 --- !u!1 &231710689
 GameObject:
   m_ObjectHideFlags: 0
@@ -2381,7 +2382,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 477976038}
-  m_LocalRotation: {x: -0.0032352605, y: 0.99471176, z: -0.033120297, w: -0.09716555}
+  m_LocalRotation: {x: -0.0032352605, y: 0.99471176, z: -0.033120293, w: -0.09716555}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2997,6 +2998,7 @@ MonoBehaviour:
   minCeilingAngle: 160
   jumpHeight: 2
   jumpDistance: 4
+  SHOW_DEBUG: 0
 --- !u!54 &679682091
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3372,7 +3374,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716985119}
-  m_LocalRotation: {x: 0.0029240693, y: 0.9948127, z: 0.029934542, w: -0.097175404}
+  m_LocalRotation: {x: 0.0029240693, y: 0.9948127, z: 0.029934546, w: -0.0971754}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
