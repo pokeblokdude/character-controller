@@ -11,7 +11,7 @@ This controller can be used in both first and third-person games. There is only 
 public Vector3 Move(Vector2 moveAmount, bool shouldJump)
 ```
 #### Parameters
-`moveAmount`: `Vector3` \
+`moveAmount`: `Vector2` \
 A 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`).
 
 `shouldJump`: `bool` \
