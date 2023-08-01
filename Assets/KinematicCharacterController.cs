@@ -112,6 +112,8 @@ public class KinematicCharacterController : MonoBehaviour {
     }
 
     void OnDrawGizmos() {
+        if(hitPoints == null) { return; }
+
         int i = 0;
         foreach(RaycastHit hit in hitPoints) {
             Color color = colors[i % (colors.Length-1)];
@@ -155,9 +157,7 @@ public class KinematicCharacterController : MonoBehaviour {
         isBumpingHead = CeilingCheck(moveAmount);
 
         if(isGrounded && onSlope && !isBumpingHead) {
-            float mag = moveAmount.magnitude;
-            moveAmount = Vector3.ProjectOnPlane(moveAmount, slopeNormal).normalized;
-            moveAmount *= mag;
+            moveAmount = ProjectAndScale(moveAmount, slopeNormal);
         }
 
         bounds = col.bounds;
@@ -178,7 +178,7 @@ public class KinematicCharacterController : MonoBehaviour {
                 jumping = true;
             }
 
-            if((isGrounded || isBumpingHead) && !jumping) {
+            if((isGrounded && !jumping) || (!isGrounded && isBumpingHead)) {
                 gravityVector = new Vector3(0, gravity, 0) * Time.deltaTime * Time.deltaTime;
             }
             else if(Mathf.Abs(gravityVector.y) < maxFallSpeed) {
@@ -231,7 +231,7 @@ public class KinematicCharacterController : MonoBehaviour {
                 }
 
                 // normal ground/slope movement
-                if(surfaceAngle <= maxSlopeAngle || surfaceAngle >= minCeilingAngle) {
+                if(surfaceAngle <= maxSlopeAngle) {
                     if(gravityPass) {
                         return snapToSurface;
                     }
