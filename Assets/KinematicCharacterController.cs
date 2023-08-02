@@ -155,8 +155,8 @@ public class KinematicCharacterController : MonoBehaviour {
     ///     Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using the
     ///     "collide and slide" algorithm. Returns the current velocity.
     /// </summary>
-    public Vector3 Move(Vector2 dir, bool shouldJump) {
-        bool move = dir != Vector2.zero;
+    public Vector3 Move(Vector2 moveDir, bool shouldJump) {
+        bool move = moveDir != Vector2.zero;
         Vector3 moveAmount;
 
         bounds = col.bounds;
@@ -188,16 +188,16 @@ public class KinematicCharacterController : MonoBehaviour {
 
         // instant
         if(!useAcceleration) {
-            groundSpeed = dir * maxSpeed;
+            groundSpeed = moveDir * maxSpeed;
         }
         // acceleration
         else {
             if(move && groundSpeed.magnitude < maxSpeed) {
-                groundSpeed += dir * accel * Time.deltaTime;
+                groundSpeed += moveDir * accel * Time.deltaTime;
             }
             else {
                 groundSpeed -= groundSpeed.normalized * deccel * Time.deltaTime;
-                if(groundSpeed.magnitude < 0.1f) {
+                if(groundSpeed.magnitude <= deccel * Time.deltaTime) {
                     groundSpeed = Vector2.zero;
                 }
             }
