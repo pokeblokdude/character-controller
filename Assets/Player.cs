@@ -45,16 +45,16 @@ public class Player : MonoBehaviour {
             transform.position = spawnPos.position;
         };
         input.Player.Sprint.performed += ctx => {
-            controller.isSprinting = true;
+            controller.SetSprint(true);
         };
         input.Player.Sprint.canceled += ctx => {
-            controller.isSprinting = false;
+            controller.SetSprint(false);
         };
         input.Player.Crouch.performed += ctx => {
-            controller.shouldCrouch = true;
+            controller.SetCrouch(true);
         };
         input.Player.Crouch.canceled += ctx => {
-            controller.shouldCrouch = false;
+            controller.SetCrouch(false);
         };
         #endregion
 

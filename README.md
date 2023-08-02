@@ -5,21 +5,39 @@ This character controller is my attempt at a "one size fits all" solution for a 
 I made a video showcasing and explaining the algorithm and my implementation here: \
 https://youtu.be/YR6Q7dUz2uk
 
-This controller can be used in both first and third-person games. There is only one public method, desribed below. Currently you could think of it as equivalent to the built-in controller's `SimpleMove()` function. All you need to do is provide an unscaled `moveAmount`.
+This controller can be used in both first and third-person games. All you need to do is provide an unscaled `moveAmount`.
+
+### Public Methods
 
 ```cs
-public Vector3 Move(Vector2 moveAmount, bool shouldJump)
+public Vector3 Move(Vector2 moveAmount, bool shouldJump);
 ```
-#### Parameters
-`moveAmount`: `Vector2` \
-A 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`).
+> Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using the "collide and slide" algorithm. Returns the current velocity.
+> #### Parameters
+> `moveAmount`: `Vector2` \
+> A 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`). \
+> 
+> `shouldJump`: `bool` \
+> Whether or not the controller should try to jump this frame.
+> #### Returns
+> `Vector3` \
+> A 3D vector representing the controller's new (unscaled) velocity after gravity and collisions.
 
-`shouldJump`: `bool` \
-Whether or not the controller should try to jump this frame.
+```cs
+public void SetSprint(bool sprint);
+```
+> Sets whether or not the controller is sprinting.
+> #### Parameters
+> `sprint`: `bool` \
+> Whether or not to sprint.
 
-#### Returns
-`Vector3` \
-A 3D vector representing the controller's new (unscaled) velocity after gravity and collisions.
+```cs
+public void SetCrouch(bool crouch);
+```
+> Sets whether or not the controller should attempt to crouch/uncrouch during the next movement update.
+> #### Parameters
+> `crouch`: `bool` \
+> Whether or not to try crouching/uncrouching.
 
 ## Features
 My character controller currently supports

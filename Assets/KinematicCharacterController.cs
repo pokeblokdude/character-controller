@@ -38,8 +38,8 @@ public class KinematicCharacterController : MonoBehaviour {
     
     [Header("Collision")]
 
-    [Tooltip("Whether or not collision checks should be performed.")]
-    public bool noclip = false;
+    //[Tooltip("Whether or not collision checks should be performed.")]
+    //public bool noclip = false;
 
     [Tooltip("Which layers the controller should take into account when checking for collisions.")]
     public LayerMask collisionMask;
@@ -77,6 +77,7 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private float maxSpeed;
     private Vector2 groundSpeed;
+    private Vector3 moveAmount;
     private Vector3 velocity;
     public bool isGrounded { get; private set; }
     public bool coyote { get; private set; }
@@ -90,8 +91,8 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private List<RaycastHit> hitPoints;
     
-    public bool isSprinting { get; set; }
-    public bool shouldCrouch { get; set; }
+    public bool isSprinting { get; private set; }
+    private bool shouldCrouch;
     public bool isCrouching { get; private set; }
     private float height;
 
@@ -151,40 +152,32 @@ public class KinematicCharacterController : MonoBehaviour {
         }
     }
 
+    /// <summary> Sets whether or not the controller is sprinting </summary>
+    public void SetSprint(bool sprint) {
+        isSprinting = sprint;
+    }
+
     /// <summary>
-    ///     Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using the
-    ///     "collide and slide" algorithm. Returns the current velocity.
+    ///  Sets whether or not the controller should attempt to crouch/uncrouch during the next movement update.
+    /// </summary>
+    public void SetCrouch(bool crouch) {
+        shouldCrouch = crouch;
+    }
+
+    /// <summary>
+    ///  Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using
+    ///  the "collide and slide" algorithm. Returns the current velocity.
     /// </summary>
     public Vector3 Move(Vector2 moveDir, bool shouldJump) {
         bool move = moveDir != Vector2.zero;
-        Vector3 moveAmount;
 
         bounds = col.bounds;
         bounds.Expand(-2 * skinWidth);
 
-        if(shouldCrouch && !isCrouching) {
-            col.height = crouchHeight;
-            col.center = new Vector3(0, col.height/2, 0);
-            isCrouching = true;
-        }
-        else if(isCrouching && !shouldCrouch) {
-            if(CanUncrouch()) {
-                col.height = height;
-                col.center = new Vector3(0, col.height/2, 0);
-                isCrouching = false;
-            }
-        }
+        isCrouching = UpdateCrouchState(shouldCrouch);
         
         // --- movement input
-        if(isCrouching) {
-            maxSpeed = maxCrouchSpeed;
-        }
-        else if(isSprinting) {
-            maxSpeed = maxSprintSpeed;
-        }
-        else {
-            maxSpeed = maxWalkSpeed;
-        }
+        maxSpeed = UpdateMaxSpeed();
 
         // instant
         if(!useAcceleration) {
@@ -205,7 +198,7 @@ public class KinematicCharacterController : MonoBehaviour {
         moveAmount = new Vector3(groundSpeed.x, 0, groundSpeed.y) * Time.deltaTime;
 
         isGrounded = GroundCheck();
-        isBumpingHead = CeilingCheck(moveAmount);
+        isBumpingHead = CeilingCheck();
 
         // coyote time
         if(wasGrounded && !isGrounded) {
@@ -220,9 +213,9 @@ public class KinematicCharacterController : MonoBehaviour {
         hitPoints.Clear();
 
         // --- collision
-        if(!noclip) {    
-            moveAmount = CollideAndSlide(moveAmount, transform.position, 0, moveAmount);
-        }
+        //if(!noclip) {    
+        moveAmount = CollideAndSlide(moveAmount, transform.position, 0, moveAmount);
+        //}
 
         // --- gravity
         if(useGravity) {
@@ -236,7 +229,7 @@ public class KinematicCharacterController : MonoBehaviour {
             if((isGrounded && !jumping) || (!isGrounded && isBumpingHead)) {
                 gravityVector = new Vector3(0, gravity, 0) * Time.deltaTime * Time.deltaTime;
             }
-            else if(Mathf.Abs(gravityVector.y) < maxFallSpeed) {
+            else if(gravityVector.y > -maxFallSpeed) {
                 gravityVector.y += gravity * Time.deltaTime * Time.deltaTime;
             }
             
@@ -258,6 +251,34 @@ public class KinematicCharacterController : MonoBehaviour {
         coyote = true;
         yield return new WaitForSeconds(coyoteTime);
         coyote = false;
+    }
+
+    private bool UpdateCrouchState(bool shouldCrouch) {
+        if(shouldCrouch && !isCrouching) {
+            col.height = crouchHeight;
+            col.center = new Vector3(0, col.height/2, 0);
+            return true;
+        }
+        else if(isCrouching && !shouldCrouch) {
+            if(CanUncrouch()) {
+                col.height = height;
+                col.center = new Vector3(0, col.height/2, 0);
+                return false;
+            }
+        }
+        return isCrouching;
+    }
+
+    private float UpdateMaxSpeed() {
+        if(isCrouching) {
+            return maxCrouchSpeed;
+        }
+        else if(isSprinting) {
+            return maxSprintSpeed;
+        }
+        else {
+            return maxWalkSpeed;
+        }
     }
 
     private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 initialMoveAmount, bool gravityPass = false) {
@@ -355,8 +376,8 @@ public class KinematicCharacterController : MonoBehaviour {
         return false;
     }
 
-    private bool CeilingCheck(Vector3 moveAmount) {
-        float dist = moveAmount.y > 0 ? moveAmount.y + skinWidth : 2 * skinWidth;
+    private bool CeilingCheck() {
+        float dist = 2 * skinWidth;
         Vector3 origin = bounds.center + new Vector3(0, col.height/2 - col.radius, 0);
 
         RaycastHit hit;
