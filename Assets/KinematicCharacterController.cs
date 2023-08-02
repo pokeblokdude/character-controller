@@ -11,17 +11,23 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("Whether or not to ramp up/down movement speed rather than starting and stopping instantaneously.")]
     public bool useAcceleration;
 
-    [Tooltip("The maximum movement speed. For non-acceleration movement, this is the only speed.")]
-    public float maxSpeed = 5;
-
-    [Tooltip("The maximum movement speed when sprinting.")]
-    public float maxSprintSpeed = 10;
-    
     [Tooltip("The amount of time it takes to reach full speed from a stand-still.")]
     public float accelTime = 0.20f;
 
     [Tooltip("The amount of time it takes to come to a stand-still from full speed.")]
     public float deccelTime = 0.20f;
+
+    [Tooltip("The maximum movement speed. For non-acceleration movement, this is the only speed.")]
+    public float maxWalkSpeed = 5;
+
+    [Tooltip("The maximum movement speed when sprinting.")]
+    public float maxSprintSpeed = 10;
+    
+    [Tooltip("The maximum movement speed when crouching.")]
+    public float maxCrouchSpeed = 2.5f;
+
+    [Tooltip("The height of the collider when crouching.")]
+    public float crouchHeight = 1f;
 
     [Tooltip("Whether or not to apply gravity to the controller.")]
     public bool useGravity = true;
@@ -38,13 +44,13 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("Which layers the controller should take into account when checking for collisions.")]
     public LayerMask collisionMask;
 
-    [Tooltip("\"Buffer\" distance inside the collider from which to start all collision checks. Should be very small (but not too small).")]
+    [Tooltip("Buffer distance inside the collider from which to start all collision checks. Should be very small (but not too small).")]
     public float skinWidth = 0.015f;
 
     [Tooltip("The maximum number of recursive collision \"bounces\" before the controller will stop.")]
     [SerializeField] private int maxCollisionDepth = 5;
     
-    [Tooltip("The maximum angle at which the controller will treat the surface like a slope. Must be less than minWallAngle.")]
+    [Tooltip("The maximum angle at which the controller will treat the surface like a slope.")]
     [Range(1, 89)] public float maxSlopeAngle = 55;
     
     [Tooltip("The minimum angle at which the controller will treat a surface like a flat ceiling, stopping vertical movement.")]
@@ -61,13 +67,20 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("The distance the controller can jump when moving at maxSpeed. Determines gravity along with jumpHeight.")]
     public float jumpDistance = 4;
 
+    [Tooltip("How long after you leave the ground can you still jump.")]
+    public float coyoteTime = 0.2f;
+
 
     [Header("Debug")]
     public bool SHOW_DEBUG = false;
 
+
+    private float maxSpeed;
     private Vector2 groundSpeed;
     private Vector3 velocity;
-    public bool isGrounded { get; private set; } = false;
+    public bool isGrounded { get; private set; }
+    public bool coyote { get; private set; }
+    private bool wasGrounded;
     public bool isBumpingHead { get; private set; }
 
     public bool isSliding { get; private set; }
@@ -77,7 +90,10 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private List<RaycastHit> hitPoints;
     
-    public bool isSprinting { get; set; } = false;
+    public bool isSprinting { get; set; }
+    public bool shouldCrouch { get; set; }
+    public bool isCrouching { get; private set; }
+    private float height;
 
     public float gravity { get; private set; }
     private Vector3 gravityVector;
@@ -100,12 +116,13 @@ public class KinematicCharacterController : MonoBehaviour {
 
         col = GetComponent<CapsuleCollider>();
         col.center = new Vector3(0, col.height/2, 0);
+        height = col.height;
 
         float halfDist = jumpDistance/2;
-        gravity = (-2 * jumpHeight * maxSpeed * maxSpeed) / (halfDist * halfDist);
-        jumpForce = (2 * jumpHeight * maxSpeed) / halfDist;
-        accel = maxSpeed / accelTime;
-        deccel = maxSpeed / deccelTime;
+        gravity = (-2 * jumpHeight * maxWalkSpeed * maxWalkSpeed) / (halfDist * halfDist);
+        jumpForce = (2 * jumpHeight * maxWalkSpeed) / halfDist;
+        accel = maxWalkSpeed / accelTime;
+        deccel = maxWalkSpeed / deccelTime;
 
         hitPoints = new List<RaycastHit>();
     }
@@ -113,10 +130,10 @@ public class KinematicCharacterController : MonoBehaviour {
     void Update() {
 #if UNITY_EDITOR
         float halfDist = jumpDistance/2;
-        gravity = (-2 * jumpHeight * maxSpeed * maxSpeed) / (halfDist * halfDist);
-        jumpForce = (2 * jumpHeight * maxSpeed) / halfDist;
-        accel = maxSpeed / accelTime;
-        deccel = maxSpeed / deccelTime;
+        gravity = (-2 * jumpHeight * maxWalkSpeed * maxWalkSpeed) / (halfDist * halfDist);
+        jumpForce = (2 * jumpHeight * maxWalkSpeed) / halfDist;
+        accel = maxWalkSpeed / accelTime;
+        deccel = maxWalkSpeed / deccelTime;
 #endif
     }
 
@@ -142,18 +159,41 @@ public class KinematicCharacterController : MonoBehaviour {
         bool move = dir != Vector2.zero;
         Vector3 moveAmount;
 
+        bounds = col.bounds;
+        bounds.Expand(-2 * skinWidth);
+
+        if(shouldCrouch && !isCrouching) {
+            col.height = crouchHeight;
+            col.center = new Vector3(0, col.height/2, 0);
+            isCrouching = true;
+        }
+        else if(isCrouching && !shouldCrouch) {
+            if(CanUncrouch()) {
+                col.height = height;
+                col.center = new Vector3(0, col.height/2, 0);
+                isCrouching = false;
+            }
+        }
+        
         // --- movement input
+        if(isCrouching) {
+            maxSpeed = maxCrouchSpeed;
+        }
+        else if(isSprinting) {
+            maxSpeed = maxSprintSpeed;
+        }
+        else {
+            maxSpeed = maxWalkSpeed;
+        }
+
         // instant
         if(!useAcceleration) {
-            groundSpeed = dir * (isSprinting ? maxSprintSpeed : maxSpeed);
+            groundSpeed = dir * maxSpeed;
         }
         // acceleration
         else {
-            if(move && groundSpeed.magnitude < (isSprinting ? maxSprintSpeed : maxSpeed)) {
+            if(move && groundSpeed.magnitude < maxSpeed) {
                 groundSpeed += dir * accel * Time.deltaTime;
-            }
-            else if(move && groundSpeed.magnitude > (isSprinting ? maxSprintSpeed : maxSpeed)) {
-                groundSpeed = groundSpeed.normalized * (isSprinting ? maxSprintSpeed : maxSpeed);
             }
             else {
                 groundSpeed -= groundSpeed.normalized * deccel * Time.deltaTime;
@@ -164,15 +204,18 @@ public class KinematicCharacterController : MonoBehaviour {
         }
         moveAmount = new Vector3(groundSpeed.x, 0, groundSpeed.y) * Time.deltaTime;
 
-        isGrounded = GroundCheck(moveAmount);
+        isGrounded = GroundCheck();
         isBumpingHead = CeilingCheck(moveAmount);
 
+        // coyote time
+        if(wasGrounded && !isGrounded) {
+            StartCoroutine(CoyoteTime());
+        }
+
+        // scale movement to slope angle
         if(isGrounded && isOnSlope && !isBumpingHead) {
             moveAmount = ProjectAndScale(moveAmount, slopeNormal);
         }
-
-        bounds = col.bounds;
-        bounds.Expand(-2 * skinWidth);
         
         hitPoints.Clear();
 
@@ -184,9 +227,10 @@ public class KinematicCharacterController : MonoBehaviour {
         // --- gravity
         if(useGravity) {
             jumping = false;
-            if(shouldJump && isGrounded) {
+            if(shouldJump && (isGrounded || coyote)) {
                 gravityVector.y = jumpForce * Time.deltaTime;
                 jumping = true;
+                coyote = false;
             }
 
             if((isGrounded && !jumping) || (!isGrounded && isBumpingHead)) {
@@ -205,103 +249,98 @@ public class KinematicCharacterController : MonoBehaviour {
         velocity = moveAmount / Time.deltaTime;
         if(SHOW_DEBUG) Debug.DrawRay(rb.position, velocity, Color.green, Time.deltaTime);
 
+        wasGrounded = isGrounded;
+
         return velocity;
     }
 
-    private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 originalMoveAmount, bool gravityPass = false) {
-        // just stop if we reach max depth (idek what scenario would have like 5+ surfaces all in one place lmao)
+    IEnumerator CoyoteTime() {
+        coyote = true;
+        yield return new WaitForSeconds(coyoteTime);
+        coyote = false;
+    }
+
+    private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 initialMoveAmount, bool gravityPass = false) {
+        // just stop if we reach max depth
         if(currentDepth >= maxCollisionDepth) {
             Debug.LogWarning("Maxing out collision depth");
             return Vector3.zero;
         }
-        else if(Mathf.Approximately(startAmount.magnitude, 0) || Vector3.Angle(startAmount, originalMoveAmount) > 90) {
+        if(Mathf.Approximately(startAmount.magnitude, 0) || Vector3.Angle(startAmount, initialMoveAmount) > 90) {
             return Vector3.zero;
         }
-        else {
-            float dist = Mathf.Abs(startAmount.magnitude) + skinWidth;
-            RaycastHit hit;
-            if(
-                Physics.CapsuleCast( 
-                    startPos + new Vector3(0, col.radius, 0),
-                    startPos + new Vector3(0, col.height - col.radius, 0),
-                    bounds.extents.x,
-                    startAmount.normalized,
-                    out hit,
-                    dist,
-                    collisionMask
-                )
-            ) {
-                hitPoints.Add(hit);
+        
+        float dist = Mathf.Abs(startAmount.magnitude) + skinWidth;
+        RaycastHit hit;
+        if(
+            Physics.CapsuleCast( 
+                startPos + new Vector3(0, col.radius, 0),
+                startPos + new Vector3(0, col.height - col.radius, 0),
+                bounds.extents.x,
+                startAmount.normalized,
+                out hit,
+                dist,
+                collisionMask
+            )
+        ) {
+            hitPoints.Add(hit);
 
-                float surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
-                Vector3 snapToSurface = startAmount.normalized * (hit.distance - skinWidth);
-                Vector3 leftover = startAmount - snapToSurface;
+            float surfaceAngle = Vector3.Angle(Vector3.up, hit.normal);
+            Vector3 snapToSurface = startAmount.normalized * (hit.distance - skinWidth);
+            Vector3 leftover = startAmount - snapToSurface;
 
-                // do not move at all during collision if the distance is too small
-                if(snapToSurface.magnitude <= skinWidth) {
-                    snapToSurface = Vector3.zero;
-                }
-
-                // normal ground/slope movement
-                if(surfaceAngle <= maxSlopeAngle) {
-                    if(gravityPass) {
-                        return snapToSurface;
-                    }
-                    leftover = ProjectAndScale(leftover, hit.normal);
-                }
-                // hitting a wall
-                else {
-                    // scale projected amount based on the angle the controller is hitting the wall
-                    float scale = 1 - Vector3.Dot(
-                        new Vector3(hit.normal.x, 0, hit.normal.z).normalized,
-                        -new Vector3(originalMoveAmount.x, 0, originalMoveAmount.z).normalized
-                    );
-                    scale = -((scale-1)*(scale-1)) + 1;     // smooth out the scaling to be non-linear
-                    
-                    // if grounded and encounter a steep slope, treat it as a flat wall on flat ground
-                    if(isGrounded && !gravityPass) {
-                        leftover = ProjectAndScale(
-                            new Vector3(leftover.x, 0, leftover.z),
-                            new Vector3(hit.normal.x, 0, hit.normal.z).normalized
-                        ) * scale;
-                    }
-                    else {
-                        leftover = ProjectAndScale(leftover, hit.normal) * scale;
-                    }
-                }
-
-                return snapToSurface + CollideAndSlide(leftover, startPos + snapToSurface, currentDepth+1, originalMoveAmount);
+            if(snapToSurface.magnitude <= skinWidth) {      // do not move at all during collision if the distance is too small
+                snapToSurface = Vector3.zero;
             }
 
-            // no collision
-            return startAmount;
+            // normal ground/slope movement
+            if(surfaceAngle <= maxSlopeAngle) {
+                if(gravityPass) {
+                    return snapToSurface;
+                }
+                leftover = ProjectAndScale(leftover, hit.normal);
+            }
+            // hitting a wall
+            else {
+                Vector3 hitNormalHorizontal = new Vector3(hit.normal.x, 0, hit.normal.z).normalized;
+                // scale projected amount based on the horizontal angle the controller is hitting the wall
+                float scale = 1 - Vector3.Dot(
+                    hitNormalHorizontal,
+                    -new Vector3(initialMoveAmount.x, 0, initialMoveAmount.z).normalized
+                );
+                scale = -((scale-1)*(scale-1)) + 1;     // smooth out the scaling to be non-linear
+                
+                // if grounded and encounter a steep slope, treat it as a flat wall on flat ground
+                if(isGrounded && !gravityPass) {
+                    leftover = ProjectAndScale(new Vector3(leftover.x, 0, leftover.z), hitNormalHorizontal) * scale;
+                }
+                else {
+                    leftover = ProjectAndScale(leftover, hit.normal) * scale;
+                }
+            }
+
+            return snapToSurface + CollideAndSlide(leftover, startPos + snapToSurface, currentDepth+1, initialMoveAmount);
         }
+
+        // no collision
+        return startAmount;
     }
 
     private Vector3 ProjectAndScale(Vector3 vector, Vector3 planeNormal) {
         float mag = vector.magnitude;
         vector = Vector3.ProjectOnPlane(vector, planeNormal).normalized;
         vector *= mag;
-
         return vector;
     }
 
-    private bool GroundCheck(Vector3 moveAmount) {
+    private bool GroundCheck() {
         isSliding = false;
 
         float dist = 2 * skinWidth;
+        Vector3 origin = bounds.center - new Vector3(0, col.height/2 - col.radius, 0);
 
         RaycastHit hit;
-        if(
-            Physics.SphereCast( 
-                bounds.center - new Vector3(0, col.height/2 - col.radius, 0),
-                bounds.extents.x,
-                Vector3.down,
-                out hit,
-                dist,
-                collisionMask
-            )
-        ) {
+        if(Physics.SphereCast(origin, bounds.extents.x, Vector3.down, out hit, dist, collisionMask)) {
             float angle = Vector3.Angle(Vector3.up, hit.normal);
             slopeAngle = angle;
             slopeNormal = hit.normal;
@@ -318,18 +357,10 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private bool CeilingCheck(Vector3 moveAmount) {
         float dist = moveAmount.y > 0 ? moveAmount.y + skinWidth : 2 * skinWidth;
+        Vector3 origin = bounds.center + new Vector3(0, col.height/2 - col.radius, 0);
 
         RaycastHit hit;
-        if(
-            Physics.SphereCast( 
-                bounds.center + new Vector3(0, col.height/2 - col.radius, 0),
-                bounds.extents.x,
-                Vector3.up,
-                out hit,
-                dist,
-                collisionMask
-            )
-        ) {
+        if(Physics.SphereCast(origin, bounds.extents.x, Vector3.up, out hit, dist, collisionMask)) {
             float angle = Vector3.Angle(Vector3.up, hit.normal);
             float hitAngle = Vector3.Angle(moveAmount.normalized, hit.normal);
             if(angle >= minCeilingAngle || hitAngle >= minCeilingAngle) {
@@ -337,5 +368,13 @@ public class KinematicCharacterController : MonoBehaviour {
             }
         }
         return false;
+    }
+
+    private bool CanUncrouch() {
+        float dist = height - crouchHeight + skinWidth;
+        Vector3 origin = bounds.center + new Vector3(0, col.height/2 - col.radius, 0);
+
+        RaycastHit hit;
+        return !Physics.SphereCast(origin, bounds.extents.x, Vector3.up, out hit, dist, collisionMask);
     }
 }

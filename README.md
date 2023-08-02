@@ -25,14 +25,14 @@ A 3D vector representing the controller's new (unscaled) velocity after gravity 
 My character controller currently supports
 - Custom collision detection
 - Both instantaneous and acceleration-based movement
-- Sprinting
+- Sprinting and crouching
 - Parameterized jump height and distance (gravity is set based on these two values)
+- Coyote Time
 - Ground/ceiling detection (needs some work at the peaks of slopes)
 - Smooth movement on slopes, plus sliding down steep slopes
 
 My character controller currently does not support
-- Crouching
 - Climbing stairs
-- Colliding with other characters (I actually have no idea what would happen)
+- Colliding with other characters
 - Moving platforms
 - Flying, swimming, noclipping, or any other niche form of movement

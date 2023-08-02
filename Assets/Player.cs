@@ -50,6 +50,12 @@ public class Player : MonoBehaviour {
         input.Player.Sprint.canceled += ctx => {
             controller.isSprinting = false;
         };
+        input.Player.Crouch.performed += ctx => {
+            controller.shouldCrouch = true;
+        };
+        input.Player.Crouch.canceled += ctx => {
+            controller.shouldCrouch = false;
+        };
         #endregion
 
         controller = GetComponent<KinematicCharacterController>();
@@ -89,11 +95,12 @@ public class Player : MonoBehaviour {
                         $"Grounded: {controller.isGrounded}\n" +
                         $"On Slope: {controller.isOnSlope}\n" +
                         $"Slope Angle: {controller.slopeAngle}\n" +
-                        $"Sliding: {controller.isSliding}\n" +
-                        // $"Hitting Wall: {controller.hittingWall}\n" +
-
-                        $"Jump: {jump}\n"
-                        //$"Jump Buffer: {jumpBufferCounter}\n"
+                        $"Sliding: {controller.isSliding}\n\n" +
+                        
+                        $"Crouching: {controller.isCrouching}\n" +
+                        $"Sprinting: {controller.isSprinting}\n" +
+                        $"Try Jump: {jump}\n" +
+                        $"Coyote: {controller.coyote}\n"
         ;
     }
 
