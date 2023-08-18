@@ -8,24 +8,6 @@ public class KinematicCharacterController : MonoBehaviour {
     
     [Header("Movement")]
 
-    [Tooltip("Whether or not to ramp up/down movement speed rather than starting and stopping instantaneously.")]
-    public bool useAcceleration;
-
-    [Tooltip("The amount of time it takes to reach full speed from a stand-still.")]
-    public float accelTime = 0.20f;
-
-    [Tooltip("The amount of time it takes to come to a stand-still from full speed.")]
-    public float deccelTime = 0.20f;
-
-    [Tooltip("The maximum movement speed. For non-acceleration movement, this is the only speed.")]
-    public float maxWalkSpeed = 5;
-
-    [Tooltip("The maximum movement speed when sprinting.")]
-    public float maxSprintSpeed = 10;
-    
-    [Tooltip("The maximum movement speed when crouching.")]
-    public float maxCrouchSpeed = 2.5f;
-
     [Tooltip("The height of the collider when crouching.")]
     public float crouchHeight = 1f;
 
@@ -64,7 +46,7 @@ public class KinematicCharacterController : MonoBehaviour {
     [Tooltip("The height the controller can jump. Determines gravity along with jumpDistance.")]
     public float jumpHeight = 2;
 
-    [Tooltip("The distance the controller can jump when moving at maxSpeed. Determines gravity along with jumpHeight.")]
+    [Tooltip("The distance the controller can jump when moving at max speed. Determines gravity along with jumpHeight.")]
     public float jumpDistance = 4;
 
     [Tooltip("How long after you leave the ground can you still jump.")]
@@ -74,13 +56,11 @@ public class KinematicCharacterController : MonoBehaviour {
     [Header("Debug")]
     public bool SHOW_DEBUG = false;
 
-
-    private float maxSpeed;
-    private Vector2 groundSpeed;
+    public ICharacterMotor motor { get; private set; }
     private Vector3 moveAmount;
     private Vector3 velocity;
+
     public bool isGrounded { get; private set; }
-    public bool coyote { get; private set; }
     private bool wasGrounded;
     public bool isBumpingHead { get; private set; }
 
@@ -91,17 +71,15 @@ public class KinematicCharacterController : MonoBehaviour {
 
     private List<RaycastHit> hitPoints;
     
-    public bool isSprinting { get; private set; }
-    private bool shouldCrouch;
+    public bool shouldCrouch { get; set; }
     public bool isCrouching { get; private set; }
     private float height;
 
     public float gravity { get; private set; }
     private Vector3 gravityVector;
+    public bool coyote { get; private set; }
     private bool jumping;
     private float jumpForce;
-    private float accel;
-    private float deccel;
 
     private Rigidbody rb;
     private CapsuleCollider col;
@@ -119,11 +97,11 @@ public class KinematicCharacterController : MonoBehaviour {
         col.center = new Vector3(0, col.height/2, 0);
         height = col.height;
 
+        motor = GetComponent<ICharacterMotor>();
+
         float halfDist = jumpDistance/2;
-        gravity = (-2 * jumpHeight * maxWalkSpeed * maxWalkSpeed) / (halfDist * halfDist);
-        jumpForce = (2 * jumpHeight * maxWalkSpeed) / halfDist;
-        accel = maxWalkSpeed / accelTime;
-        deccel = maxWalkSpeed / deccelTime;
+        gravity = (-2 * jumpHeight * motor.maxWalkSpeed * motor.maxWalkSpeed) / (halfDist * halfDist);
+        jumpForce = (2 * jumpHeight * motor.maxWalkSpeed) / halfDist;
 
         hitPoints = new List<RaycastHit>();
     }
@@ -131,10 +109,8 @@ public class KinematicCharacterController : MonoBehaviour {
     void Update() {
 #if UNITY_EDITOR
         float halfDist = jumpDistance/2;
-        gravity = (-2 * jumpHeight * maxWalkSpeed * maxWalkSpeed) / (halfDist * halfDist);
-        jumpForce = (2 * jumpHeight * maxWalkSpeed) / halfDist;
-        accel = maxWalkSpeed / accelTime;
-        deccel = maxWalkSpeed / deccelTime;
+        gravity = (-2 * jumpHeight * motor.maxWalkSpeed * motor.maxWalkSpeed) / (halfDist * halfDist);
+        jumpForce = (2 * jumpHeight * motor.maxWalkSpeed) / halfDist;
 #endif
     }
 
@@ -152,50 +128,18 @@ public class KinematicCharacterController : MonoBehaviour {
         }
     }
 
-    /// <summary> Sets whether or not the controller is sprinting </summary>
-    public void SetSprint(bool sprint) {
-        isSprinting = sprint;
-    }
-
-    /// <summary>
-    ///  Sets whether or not the controller should attempt to crouch/uncrouch during the next movement update.
-    /// </summary>
-    public void SetCrouch(bool crouch) {
-        shouldCrouch = crouch;
-    }
-
     /// <summary>
     ///  Moves the attached rigidbody in the desired direction, taking into account gravity, collisions, and slopes, using
     ///  the "collide and slide" algorithm. Returns the current velocity.
     /// </summary>
     public Vector3 Move(Vector2 moveDir, bool shouldJump) {
-        bool move = moveDir != Vector2.zero;
-
         bounds = col.bounds;
         bounds.Expand(-2 * skinWidth);
 
         isCrouching = UpdateCrouchState(shouldCrouch);
-        
-        // --- movement input
-        maxSpeed = UpdateMaxSpeed();
+        motor.Crouch(isCrouching);
 
-        // instant
-        if(!useAcceleration) {
-            groundSpeed = moveDir * maxSpeed;
-        }
-        // acceleration
-        else {
-            if(move && groundSpeed.magnitude < maxSpeed) {
-                groundSpeed += moveDir * accel * Time.deltaTime;
-            }
-            else {
-                groundSpeed -= groundSpeed.normalized * deccel * Time.deltaTime;
-                if(groundSpeed.magnitude <= deccel * Time.deltaTime) {
-                    groundSpeed = Vector2.zero;
-                }
-            }
-        }
-        moveAmount = new Vector3(groundSpeed.x, 0, groundSpeed.y) * Time.deltaTime;
+        moveAmount = motor.Accelerate(new Vector3(moveDir.x, 0, moveDir.y), velocity) * Time.deltaTime;
 
         isGrounded = GroundCheck();
         isBumpingHead = CeilingCheck();
@@ -267,18 +211,6 @@ public class KinematicCharacterController : MonoBehaviour {
             }
         }
         return isCrouching;
-    }
-
-    private float UpdateMaxSpeed() {
-        if(isCrouching) {
-            return maxCrouchSpeed;
-        }
-        else if(isSprinting) {
-            return maxSprintSpeed;
-        }
-        else {
-            return maxWalkSpeed;
-        }
     }
 
     private Vector3 CollideAndSlide(Vector3 startAmount, Vector3 startPos, int currentDepth, Vector3 initialMoveAmount, bool gravityPass = false) {

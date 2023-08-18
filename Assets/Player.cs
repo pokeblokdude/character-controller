@@ -45,16 +45,16 @@ public class Player : MonoBehaviour {
             transform.position = spawnPos.position;
         };
         input.Player.Sprint.performed += ctx => {
-            controller.SetSprint(true);
+            controller.motor.Sprint(true);
         };
         input.Player.Sprint.canceled += ctx => {
-            controller.SetSprint(false);
+            controller.motor.Sprint(false);
         };
         input.Player.Crouch.performed += ctx => {
-            controller.SetCrouch(true);
+            controller.shouldCrouch = true;
         };
         input.Player.Crouch.canceled += ctx => {
-            controller.SetCrouch(false);
+            controller.shouldCrouch = false;
         };
         #endregion
 
@@ -98,7 +98,7 @@ public class Player : MonoBehaviour {
                         $"Sliding: {controller.isSliding}\n\n" +
                         
                         $"Crouching: {controller.isCrouching}\n" +
-                        $"Sprinting: {controller.isSprinting}\n" +
+                        //$"Sprinting: {controller.motor.isSprinting}\n" +
                         $"Try Jump: {jump}\n" +
                         $"Coyote: {controller.coyote}\n"
         ;
