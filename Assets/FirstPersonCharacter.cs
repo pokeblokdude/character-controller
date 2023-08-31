@@ -4,18 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(KinematicCharacterController))]
-public class Player : MonoBehaviour {
+public class FirstPersonCharacter : MonoBehaviour {
     
     public Transform spawnPos;
-    public Transform camTarget;
+    public Transform cam;
     public Text text;
+    public float sens = 0.2f;
 
     public KinematicCharacterController controller { get; private set; }
     InputActions input;
 
     Vector2 moveDir;
     Vector2 lookDir;
-    float lookX;
+    float lookX, lookY = 0;
     bool jump;
 
     Vector3 velocity;
@@ -67,16 +68,25 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
+        UpdateLookDir();
         setDebugText();
     }
 
     void FixedUpdate() {
-        Vector3 direction = (Camera.main.transform.forward * moveDir.y + Camera.main.transform.right * moveDir.x);
+        Vector3 direction = (cam.forward * moveDir.y + cam.right * moveDir.x);
         direction.y = 0;
         direction.Normalize();
         Vector2 dir = new Vector2(direction.x, direction.z);
-        // velocity = controller.Move(new Vector2(0, 1), jump);
+        // controller.Move(new Vector2(-1, 0), jump);
         velocity = controller.Move(dir, jump);
+    }
+
+    void UpdateLookDir() {
+        Vector2 look = lookDir * sens;
+        lookX -= look.y;
+        lookX = Mathf.Clamp(lookX, -89, 89);
+        lookY += look.x;
+        cam.localEulerAngles = Vector3.right * lookX + Vector3.up * lookY;
     }
 
     void setDebugText() {
@@ -95,9 +105,8 @@ public class Player : MonoBehaviour {
                     $"Grounded: {controller.isGrounded}\n" +
                     $"On Slope: {controller.isOnSlope}\n" +
                     $"Slope Angle: {controller.slopeAngle}\n" +
-                    $"Sliding: {controller.isSliding}\n" +
-                    $"Climbing Step: {controller.isClimbingStep}\n\n" +
-
+                    $"Sliding: {controller.isSliding}\n\n" +
+                        
                     $"Crouching: {controller.isCrouching}\n" +
                     //$"Sprinting: {controller.motor.isSprinting}\n" +
                     $"Try Jump: {jump}\n" +
@@ -113,3 +122,4 @@ public class Player : MonoBehaviour {
         input.Disable();
     }
 }
+

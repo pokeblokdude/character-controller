@@ -1,4 +1,4 @@
-# Simple Kinematic Character Controller
+# Simple Kinematic Character Controller (WIP)
 
 This character controller is my attempt at a "one size fits all" solution for a 3D character controller. It's implemented using the "collide and slide" algorithm, outlined by Kasper Fauerby in his paper, "[Improved Collision detection and Response](https://www.peroxide.dk/papers/collision/collision.pdf)".
 
