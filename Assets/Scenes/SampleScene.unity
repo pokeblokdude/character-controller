@@ -5379,7 +5379,7 @@ Transform:
   m_GameObject: {fileID: 228655932}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.6604676, y: 1.319, z: -2.7537107}
+  m_LocalPosition: {x: -7.6604676, y: 1.315, z: -2.7537107}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5468,7 +5468,7 @@ Transform:
   m_GameObject: {fileID: 229023569}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.37, y: 0.019, z: 1.69}
+  m_LocalPosition: {x: -8.37, y: 0.015, z: 1.69}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5503,22 +5503,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a60076670543a44b65bf148356591e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
-  crouchHeight: 1
-  useGravity: 1
-  maxFallSpeed: 20
-  collisionMask:
+  m_crouchHeight: 1
+  m_useGravity: 1
+  m_maxFallSpeed: 20
+  <MaxSpeed>k__BackingField: 5
+  m_collisionMask:
     serializedVersion: 2
     m_Bits: 128
-  skinWidth: 0.015
-  maxCollisionDepth: 5
-  maxSlopeAngle: 55
-  minCeilingAngle: 160
-  maxStepHeight: 0.32
-  minStepDepth: 0.1
-  jumpHeight: 2
-  jumpDistance: 4
-  coyoteTime: 0.2
+  m_skinWidth: 0.015
+  m_maxSlopeAngle: 55
+  m_minCeilingAngle: 165
+  m_maxStepHeight: 0.2
+  m_minStepDepth: 0.1
+  m_jumpHeight: 2
+  m_jumpDistance: 4
+  m_coyoteTime: 0.2
   SHOW_DEBUG: 1
 --- !u!114 &229023575
 MonoBehaviour:
@@ -5532,9 +5531,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcfb359ae5386f04d8f2ae19445104d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  crouchSpeedMult: 0.5
-  sprintSpeedMult: 2
+  _walkSpeed: 5
+  _crouchSpeedMult: 0.5
+  _sprintSpeedMult: 2
 --- !u!1 &229476916
 GameObject:
   m_ObjectHideFlags: 0
@@ -10230,7 +10229,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 477976038}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0331737, y: -0.07904082, z: 0.0026317723, w: 0.9963158}
+  m_LocalRotation: {x: 0.033173714, y: -0.07904082, z: 0.0026317735, w: 0.9963158}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13287,22 +13286,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a60076670543a44b65bf148356591e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
-  crouchHeight: 1
-  useGravity: 1
-  maxFallSpeed: 20
-  collisionMask:
+  m_crouchHeight: 1
+  m_useGravity: 1
+  m_maxFallSpeed: 20
+  <MaxSpeed>k__BackingField: 5
+  m_collisionMask:
     serializedVersion: 2
-    m_Bits: 128
-  skinWidth: 0.015
-  maxCollisionDepth: 5
-  maxSlopeAngle: 55
-  minCeilingAngle: 160
-  maxStepHeight: 0.2
-  minStepDepth: 0.1
-  jumpHeight: 2
-  jumpDistance: 4
-  coyoteTime: 0.2
+    m_Bits: 0
+  m_skinWidth: 0.015
+  m_maxSlopeAngle: 55
+  m_minCeilingAngle: 165
+  m_maxStepHeight: 0.2
+  m_minStepDepth: 0.1
+  m_jumpHeight: 2
+  m_jumpDistance: 4
+  m_coyoteTime: 0.2
   SHOW_DEBUG: 0
 --- !u!54 &679682091
 Rigidbody:
@@ -15712,7 +15710,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 716985119}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.029982818, y: -0.079048835, z: -0.0023786293, w: 0.9964169}
+  m_LocalRotation: {x: -0.029982805, y: -0.079048835, z: -0.0023786284, w: 0.9964169}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -15799,22 +15797,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23a60076670543a44b65bf148356591e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
-  crouchHeight: 1
-  useGravity: 1
-  maxFallSpeed: 20
-  collisionMask:
+  m_crouchHeight: 1
+  m_useGravity: 1
+  m_maxFallSpeed: 20
+  <MaxSpeed>k__BackingField: 5
+  m_collisionMask:
     serializedVersion: 2
-    m_Bits: 128
-  skinWidth: 0.015
-  maxCollisionDepth: 5
-  maxSlopeAngle: 55
-  minCeilingAngle: 160
-  maxStepHeight: 0.2
-  minStepDepth: 0.1
-  jumpHeight: 2
-  jumpDistance: 4
-  coyoteTime: 0.2
+    m_Bits: 0
+  m_skinWidth: 0.015
+  m_maxSlopeAngle: 55
+  m_minCeilingAngle: 165
+  m_maxStepHeight: 0.2
+  m_minStepDepth: 0.1
+  m_jumpHeight: 2
+  m_jumpDistance: 4
+  m_coyoteTime: 0.2
   SHOW_DEBUG: 1
 --- !u!54 &738992962
 Rigidbody:
@@ -15911,9 +15908,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dcfb359ae5386f04d8f2ae19445104d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 5
-  crouchSpeedMult: 0.5
-  sprintSpeedMult: 2
+  _walkSpeed: 5
+  _crouchSpeedMult: 0.5
+  _sprintSpeedMult: 2
 --- !u!43 &740464088
 Mesh:
   m_ObjectHideFlags: 0
@@ -23306,8 +23303,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0014689314, y: -0.07908453, z: 0.0001165348, w: 0.9968668}
-  m_LocalPosition: {x: -7.6604676, y: 1.319, z: -2.7537107}
+  m_LocalRotation: {x: 0.0014689463, y: -0.07908453, z: 0.000116535964, w: 0.9968668}
+  m_LocalPosition: {x: -7.6604676, y: 1.315, z: -2.7537107}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -37418,7 +37415,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1586110062}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0014689263, y: -0.07908453, z: 0.000116534466, w: 0.9968668}
+  m_LocalRotation: {x: 0.0014689385, y: -0.07908453, z: 0.00011653543, w: 0.9968668}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

@@ -46,16 +46,16 @@ public class FirstPersonCharacter : MonoBehaviour {
             transform.position = spawnPos.position;
         };
         input.Player.Sprint.performed += ctx => {
-            controller.isSprinting = true;
+            controller.IsSprinting = true;
         };
         input.Player.Sprint.canceled += ctx => {
-            controller.isSprinting = false;
+            controller.IsSprinting = false;
         };
         input.Player.Crouch.performed += ctx => {
-            controller.shouldCrouch = true;
+            controller.ShouldCrouch = true;
         };
         input.Player.Crouch.canceled += ctx => {
-            controller.shouldCrouch = false;
+            controller.ShouldCrouch = false;
         };
         #endregion
 
@@ -94,7 +94,7 @@ public class FirstPersonCharacter : MonoBehaviour {
                     $"deltaTime: {Time.deltaTime}\n" +
                     $"Timescale: {Time.timeScale}\n\n" +
 
-                    $"Gravity: {controller.gravity}\n" +
+                    $"Gravity: {controller.Gravity}\n" +
                     $"Speed: {velocity.magnitude.ToString("f2")}\n" +
                     //$"Acceleration: {controller.Acceleration().ToString("F4")}\n" +
                     $"Velocity: {velocity.ToString("F6")}\n" +
@@ -102,15 +102,15 @@ public class FirstPersonCharacter : MonoBehaviour {
                     $"MoveDir: {moveDir}\n" +
                     $"LookDir: {transform.forward.ToString("f2")}\n\n" +
                         
-                    $"Grounded: {controller.isGrounded}\n" +
-                    $"On Slope: {controller.isOnSlope}\n" +
-                    $"Slope Angle: {controller.slopeAngle}\n" +
-                    $"Sliding: {controller.isSliding}\n\n" +
+                    $"Grounded: {controller.IsGrounded}\n" +
+                    $"On Slope: {controller.IsOnSlope}\n" +
+                    $"Slope Angle: {controller.SlopeAngle}\n" +
+                    $"Sliding: {controller.IsSliding}\n\n" +
                         
-                    $"Crouching: {controller.isCrouching}\n" +
+                    $"Crouching: {controller.IsCrouching}\n" +
                     //$"Sprinting: {controller.motor.isSprinting}\n" +
                     $"Try Jump: {jump}\n" +
-                    $"Coyote: {controller.coyote}\n"
+                    $"Coyote: {controller.Coyote}\n"
         ;
     }
 
