@@ -1,9 +1,12 @@
 # Simple Kinematic Character Controller (WIP)
 
-This character controller is my attempt at a "one size fits all" solution for a 3D character controller. It's implemented using the "collide and slide" algorithm, outlined by Kasper Fauerby in his paper, "[Improved Collision detection and Response](https://www.peroxide.dk/papers/collision/collision.pdf)".
+This character controller is my attempt at a "one size fits all" solution for a 3D character controller. It's implemented using the "collide and slide" algorithm, outlined by Kasper Fauerby in his paper, "[Improved Collision detection and Response](https://www.peroxide.dk/papers/collision/collision.pdf)", and iterated on by Jeff Linahan in "[Improving the Numerical Robustness of Sphere Swept Collision Detection](https://arxiv.org/ftp/arxiv/papers/1211/1211.0059.pdf)."
 
-I made a video showcasing and explaining the algorithm and my implementation here: \
+I made a video showcasing and explaining the original algorithm and my implementation here: \
 https://youtu.be/YR6Q7dUz2uk
+
+and a follow-up video covering Linahan's improved algorithm, as well as stair detection, here: \
+`TBA`
 
 This controller can be used in both first and third-person games. All you need to do is provide a normalized `moveDir`.
 
@@ -16,7 +19,7 @@ Moves the attached rigidbody in the desired direction, taking into account gravi
 
 **Parameters** \
 `moveAmount`: `Vector2` \
-A 2D vector representing the current speed the player wants to move (**NOT** scaled by `deltaTime`). \
+A normalized 2D vector representing the current direction the player wants to move (**NOT** scaled by `deltaTime`). \
 `shouldJump`: `bool` \
 Whether or not the controller should try to jump this frame.
 
@@ -28,7 +31,8 @@ A 3D vector representing the controller's new (unscaled) velocity after gravity 
 My character controller currently supports
 - Custom collision detection
 - Ground/ceiling detection
-- Smooth movement on slopes, plus sliding down steep slopes
+- Smooth movement on slopes, plus sliding down steep slopes\
+- Climbing/descending stairs
 - Parameterized jump height and distance 
   - Gravity is set based on these two values
 - Coyote Time
@@ -36,10 +40,10 @@ My character controller currently supports
 - Extensible movement behavior using *Character Motor* components (see below)
 
 My character controller currently does not support
-- Climbing stairs
 - Colliding with other characters
 - Moving platforms
 - Flying, swimming, noclipping, or any other niche form of movement
+- Networking/multiplayer
 
 ## Character Motors
 
@@ -47,13 +51,7 @@ The Kinematic Character Controller accelerates based on the methods provided by 
 
 ```cs
 public interface ICharacterMotor {
-  // properties can't be accessed in the inspector, so a duplicate, serializable field will
-  // be needed in any implementing classes
-  float maxWalkSpeed { get; set; }
-
-  Vector3 Accelerate(Vector3 wishDir, Vector3 currentVel);
-  void Sprint(bool s);
-  void Crouch(bool c);
+    Vector3 Accelerate(Vector3 wishDir, Vector3 currentVel);
 }
 ```
 
