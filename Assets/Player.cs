@@ -19,6 +19,7 @@ public class Player : MonoBehaviour {
     Vector2 lookDir;
     float lookX;
     bool jump;
+    Vector2 dir;
 
     Vector3 velocity;
 
@@ -77,8 +78,8 @@ public class Player : MonoBehaviour {
         Vector3 direction = (Camera.main.transform.forward * moveDir.y + Camera.main.transform.right * moveDir.x);
         direction.y = 0;
         direction.Normalize();
-        Vector2 dir = new Vector2(direction.x, direction.z);
-        // velocity = controller.Move(new Vector2(0, 1), jump);
+        dir = new Vector2(direction.x, direction.z);
+        // dir = new Vector2(1, 0.05f).normalized * 0.1f;
         velocity = controller.Move(dir, jump);
     }
 
@@ -92,8 +93,9 @@ public class Player : MonoBehaviour {
                     //$"Acceleration: {controller.Acceleration().ToString("F4")}\n" +
                     $"Velocity: {velocity.ToString("F6")}\n" +
                     $"Position: {transform.position.ToString("F4")}\n" +
-                    $"MoveDir: {moveDir}\n" +
-                    $"LookDir: {cam.transform.eulerAngles.ToString("F4")}\n\n" +
+                    $"LookDir: {cam.transform.eulerAngles.ToString("F4")}\n" +
+                    $"MoveDir: {dir.ToString("F4")}\n" +
+                    $"Input: {moveDir}\n\n" +
                         
                     $"Grounded: {controller.IsGrounded}\n" +
                     $"On Slope: {controller.IsOnSlope}\n" +
