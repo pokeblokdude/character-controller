@@ -79,7 +79,7 @@ public class Player : MonoBehaviour {
         direction.y = 0;
         direction.Normalize();
         dir = new Vector2(direction.x, direction.z);
-        // dir = new Vector2(1, 0.05f).normalized * 0.1f;
+        // dir = new Vector2(0, -1).normalized;
         velocity = controller.Move(dir, jump);
     }
 
